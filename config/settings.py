@@ -13,7 +13,12 @@ SECRET_KEY = 'django-insecure-g)#&hcipis_r_h-3e+a1-48w_ssi2r+um4i)+ss6g&l(n-une4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['yalhardware-backend.onrender.com',] 
+if os.environ.get("DJANGO_ENV") == "production":
+    # 生产环境
+    ALLOWED_HOSTS = ['yalhardware-backend.onrender.com']
+else:
+    # 开发环境
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
