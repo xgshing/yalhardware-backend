@@ -55,8 +55,16 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-MEDIA_URL = '/media/'
+if os.environ.get("DJANGO_ENV") == "production":
+    MEDIA_URL = 'https://yalhardware-backend.onrender.com/media/'
+else:
+    MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# 允许 GitHub Pages 域名跨域
+CORS_ALLOWED_ORIGINS = [
+    "https://xgshing.github.io",
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
