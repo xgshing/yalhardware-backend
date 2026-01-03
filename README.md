@@ -1,4 +1,4 @@
-# YAL Hardware Backend
+# YAL Hardware 后端系统
 
 YAL Hardware 后端项目，基于 **Python + Django** 构建 API 服务，提供产品数据接口并支持后台管理。  
 与前端完全解耦，适用于工业 / 五金产品展示场景的企业后台系统。
