@@ -1,5 +1,5 @@
 # 返回给前端用
-# serializers/product_detail.py
+# apps/products/serializers/product_detail.py
 from rest_framework import serializers
 from ..models import Product
 from .category import ProductCategorySerializer

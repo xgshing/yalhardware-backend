@@ -1,5 +1,5 @@
 #处理请求结构（FormData / JSON / Files）
-# products/views.py
+# apps/products/views.py
 
 from rest_framework.generics import (
     ListAPIView,

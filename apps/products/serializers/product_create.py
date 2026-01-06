@@ -1,5 +1,5 @@
  # 创建校验
-# serializers/product_create.py
+# apps/products/serializers/product_create.py
 from ..models import Product, ProductImage, ProductVariant
 from .product_base import BaseProductWriteSerializer
 
@@ -19,8 +19,8 @@ class ProductCreateSerializer(BaseProductWriteSerializer):
 
         product = Product.objects.create(**validated_data)
 
-        for img in images:
-            ProductImage.objects.create(product=product, image=img)
+        for url in images:
+            ProductImage.objects.create(product=product, image=url)
 
         for variant in variants_data:
             ProductVariant.objects.create(product=product, **variant)

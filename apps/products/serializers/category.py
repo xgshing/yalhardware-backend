@@ -1,5 +1,5 @@
 
-# serializers/category.py
+# apps/products/serializers/category.py
 from rest_framework import serializers
 from ..models import ProductCategory
 

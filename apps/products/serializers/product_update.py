@@ -1,4 +1,4 @@
-# serializers/product_update.py
+# apps/products/serializers/product_update.py
 from ..models import ProductImage, ProductVariant
 from .product_base import BaseProductWriteSerializer
 

@@ -33,7 +33,7 @@ class CompanyAboutImage(models.Model):
         related_name='about_images',
         on_delete=models.CASCADE
     )
-    image = models.ImageField(upload_to='company/about/')
+    image = models.URLField(max_length=500)
     sort = models.PositiveIntegerField(default=0)
 
     class Meta:
