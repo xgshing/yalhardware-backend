@@ -22,11 +22,14 @@ from .serializers.category_tree import CategoryTreeSerializer
 from core.cloudinary import upload_image
 
 
+# =========================
+# 后台产品管理（Cloudinary 版）
+# =========================
 class AdminProductViewSet(viewsets.ModelViewSet):
     """
     ✅ Cloudinary 版后台产品管理
-    - 所有图片：Cloudinary
-    - DB 只存 URL
+    - 所有图片上传 Cloudinary
+    - 数据库只存 URL
     """
     queryset = Product.objects.all().order_by(
         '-is_featured',
@@ -62,7 +65,7 @@ class AdminProductViewSet(viewsets.ModelViewSet):
             )
             product.save(update_fields=['cover'])
 
-        # ===== 2️⃣ 详情图（多图）=====
+        # ===== 2️⃣ 详情图 =====
         for img in request.FILES.getlist('uploaded_images'):
             url = upload_image(
                 img,
@@ -77,7 +80,6 @@ class AdminProductViewSet(viewsets.ModelViewSet):
         variants_raw = request.data.get('uploaded_variants')
         if variants_raw:
             variants_data = json.loads(variants_raw)
-
             for v in variants_data:
                 uid = v.get('uid')
                 file = request.FILES.get(f'uploaded_variants_images_{uid}')
@@ -103,7 +105,7 @@ class AdminProductViewSet(viewsets.ModelViewSet):
         )
 
     # =========================
-    # 更新产品（完整）
+    # 更新产品
     # =========================
     @transaction.atomic
     def update(self, request, *args, **kwargs):
@@ -152,7 +154,7 @@ class AdminProductViewSet(viewsets.ModelViewSet):
                 image=url
             )
 
-        # ===== 4️⃣ 款式 =====
+        # ===== 4️⃣ 款式增改删 =====
         variants_raw = request.data.get('uploaded_variants')
         if variants_raw:
             variants_data = json.loads(variants_raw)
@@ -202,6 +204,7 @@ class AdminProductViewSet(viewsets.ModelViewSet):
                     )
                     keep_ids.append(obj.id)
 
+            # 删除未保留款式
             ProductVariant.objects.filter(
                 product=product
             ).exclude(id__in=keep_ids).delete()
@@ -219,5 +222,34 @@ class AdminProductViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data)
 
+    # =========================
+    # 推荐产品排序
+    # =========================
+    @action(detail=False, methods=['post'], url_path='reorder')
+    @transaction.atomic
+    def reorder(self, request):
+        data = request.data
+        if not isinstance(data, list):
+            return Response({'detail': '请求数据必须为列表'}, status=400)
+
+        for item in data:
+            pid = int(item.get('id'))
+            order = int(item.get('featured_order', 0))
+            Product.objects.filter(id=pid).update(featured_order=order)
+
+        return Response({'message': '排序已保存'}, status=200)
 
 
+# =========================
+# 产品分类管理
+# =========================
+class ProductCategoryViewSet(viewsets.ModelViewSet):
+    queryset = ProductCategory.objects.all()
+    serializer_class = ProductCategorySerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=['get'], url_path='tree')
+    def tree(self, request):
+        roots = ProductCategory.objects.filter(parent__isnull=True)
+        serializer = CategoryTreeSerializer(roots, many=True)
+        return Response(serializer.data)

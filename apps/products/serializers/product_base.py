@@ -26,7 +26,6 @@ class BaseProductWriteSerializer(serializers.ModelSerializer):
             'description',
             'specifications',
             'is_active',
-            'cover',
             'is_featured',
             'uploaded_images',
             'uploaded_variants',

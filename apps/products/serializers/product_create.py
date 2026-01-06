@@ -53,7 +53,6 @@ class ProductCreateSerializer(BaseProductWriteSerializer):
             'specifications',
             'is_active',
             'is_featured',
-            'cover',
             'featured_order',
         ]
 
