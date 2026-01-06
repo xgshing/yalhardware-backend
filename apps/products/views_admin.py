@@ -29,11 +29,7 @@ from .serializers.category_tree import CategoryTreeSerializer
 from urllib.parse import urlparse
 
 def normalize_media_path(url: str) -> str:
-    """
-    支持：
-    - /media/xxx.jpg
-    - http://localhost:8000/media/xxx.jpg
-    """
+
     if not url:
         return url
 
