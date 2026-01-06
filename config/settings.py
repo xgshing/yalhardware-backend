@@ -1,4 +1,5 @@
 from pathlib import Path
+import dj_database_url
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -98,12 +99,32 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# 判断是否在 Render 上
+IS_RENDER = os.environ.get("RENDER") == "true"
+
+if IS_RENDER:
+    # -------------------------------
+    # Render 生产环境 - 使用 PostgreSQL
+    # -------------------------------
+    # 在 Render Web Service → Environment Variables 中设置：
+    # DATABASE_URL=postgresql://yalhardware_user:qQaBC9KPO7eZQjI8WJQQAcQbXYHC9EkF@dpg-d5e9ks8gjchc73a27bcg-a.oregon-postgres.render.com/yalhardware
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.environ.get("DATABASE_URL"), 
+            conn_max_age=600,                        # 长连接池，提高性能
+            ssl_require=True                          # Render 外部 PostgreSQL 需要 SSL
+        )
     }
-}
+else:
+    # -------------------------------
+    # 本地开发环境 - 使用 SQLite
+    # -------------------------------
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
