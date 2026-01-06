@@ -100,9 +100,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # 判断是否在 Render 上
-IS_RENDER = os.environ.get("RENDER") == "true"
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-if IS_RENDER:
+if DATABASE_URL:
     # -------------------------------
     # Render 生产环境 - 使用 PostgreSQL
     # -------------------------------
@@ -110,9 +110,9 @@ if IS_RENDER:
     # DATABASE_URL=postgresql://yalhardware_user:qQaBC9KPO7eZQjI8WJQQAcQbXYHC9EkF@dpg-d5e9ks8gjchc73a27bcg-a.oregon-postgres.render.com/yalhardware
     DATABASES = {
         "default": dj_database_url.config(
-            default=os.environ.get("DATABASE_URL"), 
-            conn_max_age=600,                        # 长连接池，提高性能
-            ssl_require=True                          # Render 外部 PostgreSQL 需要 SSL
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
         )
     }
 else:

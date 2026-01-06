@@ -1,0 +1,974 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$frcx9V7MxUErGBnU6y2ahc$X9PFsD7U9WceSxqlj9uDN3xD9taIzuTGJV4QdM6H3JQ=",
+    "last_login": "2025-12-29T05:03:00.196Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "xgshing@qq.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-12-25T16:43:47.858Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "ac7nytyx0hvrtstug3jdbcvlarjptchl",
+  "fields": {
+    "session_data": ".eJxVjEsOgzAMBe-SdRXFScyny-45A7Jj09BWIBFYVb17QWLRbt_MvLfpaVtzvxVd-lHM1YC5_G5M6anTAeRB0322aZ7WZWR7KPakxXaz6Ot2un8HmUre60qA2AVRQkwsDqM2GAhjqoBrrX0bIERtARxgGhwE9cKx4cYPe-vM5wvjUjeB:1vYoRl:LA7YoVz7IupHbBi9nZ8-3AO_WcvWY7DLaY7Z8Vt855w",
+    "expire_date": "2026-01-08T16:44:17.410Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "dv9p20qyqk79gguwii8kewa1xavwiel8",
+  "fields": {
+    "session_data": ".eJxVjEsOgzAMBe-SdRXFScyny-45A7Jj09BWIBFYVb17QWLRbt_MvLfpaVtzvxVd-lHM1YC5_G5M6anTAeRB0322aZ7WZWR7KPakxXaz6Ot2un8HmUre60qA2AVRQkwsDqM2GAhjqoBrrX0bIERtARxgGhwE9cKx4cYPe-vM5wvjUjeB:1va5PI:-zpvDGbdTfT2cXwjJdOjrkIEP7R-jSNlofWwj4Mesqs",
+    "expire_date": "2026-01-12T05:03:00.200Z"
+  }
+},
+{
+  "model": "products.productcategory",
+  "pk": 1,
+  "fields": {
+    "name": "Pliers",
+    "parent": null,
+    "order": 0
+  }
+},
+{
+  "model": "products.productcategory",
+  "pk": 2,
+  "fields": {
+    "name": "Beauty Tools",
+    "parent": null,
+    "order": 0
+  }
+},
+{
+  "model": "products.productcategory",
+  "pk": 3,
+  "fields": {
+    "name": "Eyelash Curler",
+    "parent": 2,
+    "order": 0
+  }
+},
+{
+  "model": "products.productcategory",
+  "pk": 4,
+  "fields": {
+    "name": "Baby Manicure sets",
+    "parent": 2,
+    "order": 0
+  }
+},
+{
+  "model": "products.productcategory",
+  "pk": 5,
+  "fields": {
+    "name": "SkinCare Tools",
+    "parent": 2,
+    "order": 0
+  }
+},
+{
+  "model": "products.productcategory",
+  "pk": 6,
+  "fields": {
+    "name": "Personal Care Tools",
+    "parent": null,
+    "order": 0
+  }
+},
+{
+  "model": "products.product",
+  "pk": 24,
+  "fields": {
+    "name": "New Style Moon Shape Nail Cutter High Quality Stainless Steel Beauty Pedicure Manicure Nail Care tool Nail Cuticle Nipper",
+    "category": 1,
+    "price": "24.20",
+    "description": "New Style Moon Shape Nail Cutter High Quality Stainless Steel Beauty Pedicure Manicure Nail Care tool Nail Cuticle Nipper",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": false,
+    "featured_order": 1,
+    "cover": "products/covers/3.jpg",
+    "featured_rank": null,
+    "created_at": "2025-12-28T06:08:14.499Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 25,
+  "fields": {
+    "name": "Hot Sale Fast Shipment Professional Manicure Stainless Steel Nail Cuticle Nipper",
+    "category": 1,
+    "price": "44.00",
+    "description": "Hot Sale Fast Shipment Professional Manicure Stainless Steel Nail Cuticle Nipper",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": true,
+    "featured_order": 3,
+    "cover": "products/covers/1.1.jpg",
+    "featured_rank": null,
+    "created_at": "2025-12-28T06:11:47.695Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 26,
+  "fields": {
+    "name": "Professional Curler Eyebrow Eyelash tweezers",
+    "category": 3,
+    "price": "23.65",
+    "description": "Professional Universal Eyelash Curler Eyebrow Eyelash tweezers",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": true,
+    "featured_order": 1,
+    "cover": "products/covers/2_TLWcro7.30.jpg",
+    "featured_rank": null,
+    "created_at": "2025-12-28T06:15:47.758Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 27,
+  "fields": {
+    "name": "Wholesale Professional Makeup Tool Universal Eyelash Curler Eyebrow Eyelash tweezers",
+    "category": 3,
+    "price": "24.00",
+    "description": "Wholesale Professional Makeup Tool Universal Eyelash Curler Eyebrow Eyelash tweezers",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": false,
+    "featured_order": 2,
+    "cover": "products/covers/637a1e7da85325985.jpg",
+    "featured_rank": null,
+    "created_at": "2025-12-28T06:18:44.938Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 28,
+  "fields": {
+    "name": "Baby manicure set",
+    "category": 4,
+    "price": "53.00",
+    "description": "Baby manicure set-3pcs",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": true,
+    "featured_order": 4,
+    "cover": "products/covers/63dee460889595931_TvdbDiw.jpg",
+    "featured_rank": null,
+    "created_at": "2025-12-28T06:21:34.803Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 29,
+  "fields": {
+    "name": "High Quality Baby manicure set",
+    "category": 4,
+    "price": "34.50",
+    "description": "Baby manicure set",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": true,
+    "featured_order": 5,
+    "cover": "products/covers/63dee82616695399.jpg",
+    "featured_rank": null,
+    "created_at": "2025-12-28T06:23:48.395Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 30,
+  "fields": {
+    "name": "New Arrival Skincare kits",
+    "category": 5,
+    "price": "34.00",
+    "description": "Acne blackhead removing needle cell clip acne needle set 10-piece acne needle set",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": false,
+    "featured_order": 5,
+    "cover": "products/covers/639ad7475a9a12588.jpg",
+    "featured_rank": null,
+    "created_at": "2025-12-28T06:27:57.671Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 31,
+  "fields": {
+    "name": "Personal Care Tools",
+    "category": 6,
+    "price": "33.00",
+    "description": "Amazon hot seller 150 pocket mirrors 5x/10x/15x makeup mirror bathroom mirrors",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": false,
+    "featured_order": 0,
+    "cover": "products/covers/63d701968cbe93931.jpg",
+    "featured_rank": null,
+    "created_at": "2025-12-28T06:30:11.980Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 32,
+  "fields": {
+    "name": "Toe corrector toe splitter",
+    "category": 6,
+    "price": "56.00",
+    "description": "Toe corrector toe splitter",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": false,
+    "featured_order": 0,
+    "cover": "products/covers/63d8e9a692c123748.png",
+    "featured_rank": null,
+    "created_at": "2025-12-28T06:31:59.099Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 33,
+  "fields": {
+    "name": "Ear Pick",
+    "category": 5,
+    "price": "23.21",
+    "description": "Professional manufacturer Ear Wax Remover Amazon hot selling ear cleaning pick limpieza de oidos",
+    "specifications": "",
+    "is_active": true,
+    "is_featured": false,
+    "featured_order": 0,
+    "cover": "products/covers/639ad9c1c94968500.jpg",
+    "featured_rank": null,
+    "created_at": "2026-01-04T06:42:46.558Z"
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 20,
+  "fields": {
+    "product": 24,
+    "style_name": "Silvery",
+    "style_image": "products/variants/3.jpg",
+    "spec": "",
+    "stock": 100,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 21,
+  "fields": {
+    "product": 25,
+    "style_name": "Rainbow color",
+    "style_image": "products/variants/1.1.jpg",
+    "spec": "",
+    "stock": 200,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 22,
+  "fields": {
+    "product": 26,
+    "style_name": "Blue",
+    "style_image": "products/variants/2.30.jpg",
+    "spec": "",
+    "stock": 260,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 23,
+  "fields": {
+    "product": 27,
+    "style_name": "Black",
+    "style_image": "products/variants/637a1e7da85325985.jpg",
+    "spec": "",
+    "stock": 50,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 24,
+  "fields": {
+    "product": 28,
+    "style_name": "Blue",
+    "style_image": "products/variants/63dee46088d452905_GUTObDR.jpg",
+    "spec": "",
+    "stock": 200,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 25,
+  "fields": {
+    "product": 28,
+    "style_name": "Pink",
+    "style_image": "products/variants/63dee460889595931_cNhyi4V.jpg",
+    "spec": "",
+    "stock": 300,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 26,
+  "fields": {
+    "product": 29,
+    "style_name": "Blue",
+    "style_image": "products/variants/63dee826169b05443.jpg",
+    "spec": "",
+    "stock": 390,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 27,
+  "fields": {
+    "product": 29,
+    "style_name": "Pink",
+    "style_image": "products/variants/63dee826168799099.jpg",
+    "spec": "",
+    "stock": 380,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 28,
+  "fields": {
+    "product": 30,
+    "style_name": "Blue",
+    "style_image": "products/variants/639ad7475b4de1697.jpg",
+    "spec": "",
+    "stock": 23,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 29,
+  "fields": {
+    "product": 30,
+    "style_name": "Black",
+    "style_image": "products/variants/639ad7475a9a12588.jpg",
+    "spec": "",
+    "stock": 54,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 30,
+  "fields": {
+    "product": 30,
+    "style_name": "Green",
+    "style_image": "products/variants/639ad7475b7de6859.jpg",
+    "spec": "",
+    "stock": 234,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 31,
+  "fields": {
+    "product": 30,
+    "style_name": "Pink",
+    "style_image": "products/variants/639ad7475bab24502.jpg",
+    "spec": "",
+    "stock": 23,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 32,
+  "fields": {
+    "product": 30,
+    "style_name": "Silvery",
+    "style_image": "products/variants/639ad7475c0133360.jpg",
+    "spec": "",
+    "stock": 23,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 33,
+  "fields": {
+    "product": 30,
+    "style_name": "Purple",
+    "style_image": "products/variants/639ad7475bc4080.jpg",
+    "spec": "",
+    "stock": 20,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 34,
+  "fields": {
+    "product": 31,
+    "style_name": "Black",
+    "style_image": "products/variants/63d701968cbe93931.jpg",
+    "spec": "",
+    "stock": 122,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 35,
+  "fields": {
+    "product": 32,
+    "style_name": "White",
+    "style_image": "products/variants/63d8e9a6aafc23778.png",
+    "spec": "",
+    "stock": 460,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productvariant",
+  "pk": 36,
+  "fields": {
+    "product": 33,
+    "style_name": "Yellow",
+    "style_image": "products/variants/639ad9c1c94968500.jpg",
+    "spec": "",
+    "stock": 50,
+    "sales_volume": 0
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 58,
+  "fields": {
+    "product": 24,
+    "image": "products/details/2_hWhIkSM.1.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 59,
+  "fields": {
+    "product": 24,
+    "image": "products/details/2_ka77UYV.2.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 60,
+  "fields": {
+    "product": 24,
+    "image": "products/details/2_EnrcldN.3.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 61,
+  "fields": {
+    "product": 25,
+    "image": "products/details/1.2.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 62,
+  "fields": {
+    "product": 25,
+    "image": "products/details/637a1cf8ef1059866.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 63,
+  "fields": {
+    "product": 26,
+    "image": "products/details/637a2719ed8053914.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 64,
+  "fields": {
+    "product": 26,
+    "image": "products/details/637a2719edc3d3935.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 65,
+  "fields": {
+    "product": 26,
+    "image": "products/details/637a2719ede269438.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 66,
+  "fields": {
+    "product": 26,
+    "image": "products/details/1670080080583164.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 67,
+  "fields": {
+    "product": 27,
+    "image": "products/details/637a1e7da8b842632.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 68,
+  "fields": {
+    "product": 27,
+    "image": "products/details/637a1e7da88481997.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 69,
+  "fields": {
+    "product": 27,
+    "image": "products/details/1670070571464534.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 70,
+  "fields": {
+    "product": 30,
+    "image": "products/details/1671092037476450.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 71,
+  "fields": {
+    "product": 31,
+    "image": "products/details/63d70196b17b52582.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 72,
+  "fields": {
+    "product": 31,
+    "image": "products/details/63d70196b14121809.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 73,
+  "fields": {
+    "product": 32,
+    "image": "products/details/63d8e9a6aa99f3791.png"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 74,
+  "fields": {
+    "product": 32,
+    "image": "products/details/63d8e9a6aacc7332.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 75,
+  "fields": {
+    "product": 33,
+    "image": "products/details/639ad9c1c9b544767.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 76,
+  "fields": {
+    "product": 33,
+    "image": "products/details/639ad9c1c99a79705.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 77,
+  "fields": {
+    "product": 33,
+    "image": "products/details/1671092663185501.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 78,
+  "fields": {
+    "product": 33,
+    "image": "products/details/1671092663470531.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 79,
+  "fields": {
+    "product": 33,
+    "image": "products/details/1671092663479964.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 80,
+  "fields": {
+    "product": 33,
+    "image": "products/details/1671092663858324.jpg"
+  }
+},
+{
+  "model": "products.productimage",
+  "pk": 81,
+  "fields": {
+    "product": 33,
+    "image": "products/details/1671092663940114.jpg"
+  }
+},
+{
+  "model": "content.homebanner",
+  "pk": 2,
+  "fields": {
+    "title": "Instruments as Exceptional as Your Craft.",
+    "description": "Unlock exclusive discounts designed to honor the artistry of nail professionals and enhance your exquisite craft.",
+    "button_text": "",
+    "button_link": "",
+    "order": 1,
+    "is_active": true,
+    "created_at": "2025-12-29T15:08:33.267Z",
+    "updated_at": "2025-12-29T16:52:57.699Z"
+  }
+},
+{
+  "model": "content.homebanner",
+  "pk": 3,
+  "fields": {
+    "title": "Nail Care for Grown-ups.",
+    "description": "Helping you make the shift to enduring quality and mindful self-care.",
+    "button_text": "",
+    "button_link": "",
+    "order": 2,
+    "is_active": true,
+    "created_at": "2025-12-29T15:09:58.211Z",
+    "updated_at": "2025-12-29T16:53:01.413Z"
+  }
+},
+{
+  "model": "content.homebanner",
+  "pk": 4,
+  "fields": {
+    "title": "At Your Fingertips.",
+    "description": "Solingen’s finest; where every tool is designed for the expert touch.",
+    "button_text": "",
+    "button_link": "",
+    "order": 3,
+    "is_active": true,
+    "created_at": "2025-12-29T15:10:56.397Z",
+    "updated_at": "2025-12-29T16:53:04.864Z"
+  }
+},
+{
+  "model": "content.homebanner",
+  "pk": 5,
+  "fields": {
+    "title": "Upgrade Your Grooming  from Everyday to Exceptional",
+    "description": "Discover the missing piece in your luxury lifestyle with premium nail tools that redefine daily grooming as an indulgence within reach.",
+    "button_text": "",
+    "button_link": "",
+    "order": 4,
+    "is_active": true,
+    "created_at": "2025-12-29T15:12:43.147Z",
+    "updated_at": "2025-12-29T16:53:09.925Z"
+  }
+},
+{
+  "model": "content.homebannerimage",
+  "pk": 5,
+  "fields": {
+    "order": 0,
+    "is_active": true,
+    "created_at": "2025-12-29T15:08:54.665Z",
+    "banner": 2,
+    "image": "home/banners/e10fa51e-0232-40ea-8d27-51eab6d5f168_A2jjbFg.jfif"
+  }
+},
+{
+  "model": "content.homebannerimage",
+  "pk": 6,
+  "fields": {
+    "order": 0,
+    "is_active": true,
+    "created_at": "2025-12-29T15:09:58.219Z",
+    "banner": 3,
+    "image": "home/banners/38ddff35-4e7d-4d21-a3cf-1632598a7f85.jfif"
+  }
+},
+{
+  "model": "content.homebannerimage",
+  "pk": 7,
+  "fields": {
+    "order": 0,
+    "is_active": true,
+    "created_at": "2025-12-29T15:10:56.406Z",
+    "banner": 4,
+    "image": "home/banners/8667c680-8e13-407e-a86f-7a0fce35b00b.jfif"
+  }
+},
+{
+  "model": "content.homebannerimage",
+  "pk": 8,
+  "fields": {
+    "order": 0,
+    "is_active": true,
+    "created_at": "2025-12-29T15:12:43.153Z",
+    "banner": 5,
+    "image": "home/banners/c7b35b9b-0134-4a3f-b0c8-c4505b12f6fb.jfif"
+  }
+},
+{
+  "model": "content.homefeature",
+  "pk": 4,
+  "fields": {
+    "title": "Sustainable Craftsmanship",
+    "description": "Our tools are created by expert artisans in Solingen, Germany using high-quality steel, promising lifetime durability without contributing to landfill waste",
+    "order": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "content.homefeature",
+  "pk": 6,
+  "fields": {
+    "title": "Eco-Friendly Luxury",
+    "description": "Committed to the planet,  we opt for minimal, plastic-free packaging, reflecting our dedication to environmental responsibility and sustainable beauty practices",
+    "order": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "content.homefeature",
+  "pk": 7,
+  "fields": {
+    "title": "Ethical Excellence",
+    "description": "Our promise extends beyond quality; we ensure ethical production by forgoing child labor, upholding a standard of integrity and respect in every product crafted.",
+    "order": 3,
+    "is_active": true
+  }
+},
+{
+  "model": "content.homefeatureimage",
+  "pk": 4,
+  "fields": {
+    "order": 0,
+    "is_active": true,
+    "created_at": "2025-12-29T16:12:45.438Z",
+    "feature": 4,
+    "icon": "home/features/619b5257-ee32-46a5-a395-85a8f1e2550b_n4WcAoY.jfif"
+  }
+},
+{
+  "model": "content.homefeatureimage",
+  "pk": 8,
+  "fields": {
+    "order": 0,
+    "is_active": true,
+    "created_at": "2025-12-29T16:48:53.118Z",
+    "feature": 6,
+    "icon": "home/features/91f0944a-c834-4375-9261-21c07781ea96_RvzXwlr.jfif"
+  }
+},
+{
+  "model": "content.homefeatureimage",
+  "pk": 9,
+  "fields": {
+    "order": 0,
+    "is_active": true,
+    "created_at": "2025-12-29T16:49:30.765Z",
+    "feature": 7,
+    "icon": "home/features/ddead6ab-89e2-4cc4-90ee-95145809239a.jfif"
+  }
+},
+{
+  "model": "content.homestory",
+  "pk": 3,
+  "fields": {
+    "title": "100% Solingen Germany",
+    "description": "While some brands may obscure their origins with clever marketing, our tools proudly boast authentic craftsmanship",
+    "order": 1,
+    "is_active": true
+  }
+},
+{
+  "model": "content.homestory",
+  "pk": 4,
+  "fields": {
+    "title": "Unmatched Quality",
+    "description": "Dismiss the notion that all manicure instruments are interchangeable; ours stand in a league of their own.",
+    "order": 2,
+    "is_active": true
+  }
+},
+{
+  "model": "content.homestory",
+  "pk": 5,
+  "fields": {
+    "title": "Lifetime Guarantee",
+    "description": "Crafted for longevity, our tools are treasures that can be passed down through generations",
+    "order": 3,
+    "is_active": true
+  }
+},
+{
+  "model": "system.companyprofile",
+  "pk": 1,
+  "fields": {
+    "company_name": "Yangjiang YAL Industrial & Trading Co.,Ltd.",
+    "address": "No.3 Three street Tangnan Mayan Zhongzhou Industrial Area,Jiangcheng District, Yangjiang, Guangdong, China.",
+    "contact_person": "Bob Lee",
+    "mobile": "+86-13554706223",
+    "email": "info@yal-tools.com",
+    "about_html": "<p><strong>Yangjiang YAL Industrial &amp; Trading Co.,Ltd.</strong>&nbsp;is a manufacturer of cuticle nipper with well-equipped testing facilities and strong technical force. Our team has more than 10 years in production &amp; export experiences.&nbsp;Good quality, reasonable prices and stylish designs. Be our clients, we will give you best products &amp; services.&nbsp;</p><p><br></p><p>Our well-equipped facilities and excellent quality control throughout all stages of production enable us to guarantee total customer satisfaction. As a result of our high quality products and outstanding customers service, we have gained a global sales network reaching the whole world.</p>",
+    "updated_at": "2026-01-06T03:47:48.850Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 1,
+  "fields": {
+    "image": "richtext/619b5257-ee32-46a5-a395-85a8f1e2550b.jfif",
+    "created_at": "2026-01-01T10:31:00.083Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 2,
+  "fields": {
+    "image": "richtext/619b5257-ee32-46a5-a395-85a8f1e2550b_26qjZ6y.jfif",
+    "created_at": "2026-01-01T11:47:07.982Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 3,
+  "fields": {
+    "image": "richtext/8667c680-8e13-407e-a86f-7a0fce35b00b.jfif",
+    "created_at": "2026-01-01T11:50:39.615Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 4,
+  "fields": {
+    "image": "richtext/619b5257-ee32-46a5-a395-85a8f1e2550b_JOvdwpZ.jfif",
+    "created_at": "2026-01-01T11:50:51.802Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 5,
+  "fields": {
+    "image": "richtext/91f0944a-c834-4375-9261-21c07781ea96_SXlfMx8.jfif",
+    "created_at": "2026-01-01T12:17:44.116Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 6,
+  "fields": {
+    "image": "richtext/619b5257-ee32-46a5-a395-85a8f1e2550b_gc4hfS1.jfif",
+    "created_at": "2026-01-01T13:01:48.840Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 7,
+  "fields": {
+    "image": "richtext/619b5257-ee32-46a5-a395-85a8f1e2550b_Ce919XG.jfif",
+    "created_at": "2026-01-01T13:02:58.807Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 8,
+  "fields": {
+    "image": "richtext/c7b35b9b-0134-4a3f-b0c8-c4505b12f6fb_XDIvIoR.jfif",
+    "created_at": "2026-01-01T13:06:56.495Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 9,
+  "fields": {
+    "image": "richtext/ddead6ab-89e2-4cc4-90ee-95145809239a.jfif",
+    "created_at": "2026-01-01T13:26:05.353Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 10,
+  "fields": {
+    "image": "richtext/8667c680-8e13-407e-a86f-7a0fce35b00b_XSmgyjy.jfif",
+    "created_at": "2026-01-01T13:28:31.752Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 11,
+  "fields": {
+    "image": "richtext/619b5257-ee32-46a5-a395-85a8f1e2550b_eJxXIIT.jfif",
+    "created_at": "2026-01-01T13:29:02.655Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 12,
+  "fields": {
+    "image": "richtext/8667c680-8e13-407e-a86f-7a0fce35b00b_b8uY5hz.jfif",
+    "created_at": "2026-01-01T13:29:20.111Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 13,
+  "fields": {
+    "image": "richtext/8667c680-8e13-407e-a86f-7a0fce35b00b_XSzkH16.jfif",
+    "created_at": "2026-01-01T13:29:38.205Z"
+  }
+},
+{
+  "model": "system.richtextimage",
+  "pk": 14,
+  "fields": {
+    "image": "richtext/619b5257-ee32-46a5-a395-85a8f1e2550b_UKN2XR3.jfif",
+    "created_at": "2026-01-01T13:30:09.721Z"
+  }
+}
+]
