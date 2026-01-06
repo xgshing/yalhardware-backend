@@ -1,39 +1,14 @@
- # 创建校验
 # apps/products/serializers/product_create.py
-from ..models import Product, ProductImage, ProductVariant
+from rest_framework import serializers
+from ..models import Product, ProductImage, ProductVariant, ProductCategory
 from .product_base import BaseProductWriteSerializer
 
-from rest_framework import serializers
-from ..models import Product
-from ..models import ProductCategory
-
 class ProductCreateSerializer(BaseProductWriteSerializer):
-    uploaded_variants = serializers.JSONField(
-        write_only=True,
-        required=False
-    )
-
-    def create(self, validated_data):
-        images = validated_data.pop('uploaded_images', [])
-        variants_data = validated_data.pop('uploaded_variants', [])
-
-        product = Product.objects.create(**validated_data)
-
-        for url in images:
-            ProductImage.objects.create(product=product, image=url)
-
-        for variant in variants_data:
-            ProductVariant.objects.create(product=product, **variant)
-
-        return product
-
-
     """
-    后台：创建产品用
+    后台创建产品用序列化器
     - 包含查重逻辑
+    - 处理分类
     """
-
-    # 写：接收分类 ID
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=ProductCategory.objects.all(),
         write_only=True,
@@ -54,21 +29,15 @@ class ProductCreateSerializer(BaseProductWriteSerializer):
             'is_active',
             'is_featured',
             'featured_order',
+            'uploaded_images',
+            'uploaded_variants',
         ]
 
     def validate(self, attrs):
-        """
-        同分类下，产品名不能重复
-        """
         name = attrs.get('name')
         category = attrs.get('category')
-
-        if Product.objects.filter(
-            name=name,
-            category=category
-        ).exists():
+        if Product.objects.filter(name=name, category=category).exists():
             raise serializers.ValidationError(
                 {'name': '该分类下已存在同名产品'}
             )
-
         return attrs

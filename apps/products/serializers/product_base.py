@@ -1,17 +1,17 @@
-# Product 公共字段。用来消除 Create / Update 的重复定义
 # apps/products/serializers/product_base.py
 from rest_framework import serializers
 from ..models import Product
 
-
 class BaseProductWriteSerializer(serializers.ModelSerializer):
+    """
+    公共字段，用于 Create / Update，处理文件上传
+    """
     uploaded_images = serializers.ListField(
-        child=serializers.URLField(),
+        child=serializers.FileField(),  # ⚠ FileField 支持前端上传文件
         write_only=True,
         required=False
     )
 
-    # 🔥 关键：用 JSONField 接字符串
     uploaded_variants = serializers.JSONField(
         write_only=True,
         required=False
