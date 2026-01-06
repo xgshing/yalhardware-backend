@@ -3,7 +3,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views_admin import ProductImageUploadView
 
 # ===== 前台 views（只读） =====
 from .views import (
@@ -60,7 +59,5 @@ urlpatterns = [
         'admin/',
         include(admin_router.urls)
     ),
-    # ---------- Cloudinary 上传图片接口 ----------
-    path("admin/upload/image/", ProductImageUploadView.as_view()),
 ]
 
