@@ -9,7 +9,7 @@ media/
 # Environment
 .env
 .env.*
-
+venv/
 # OS
 .DS_Store
 Thumbs.db
