@@ -1,26 +1,52 @@
 # apps/products/views_admin.py
 import json
+import os
+from django.conf import settings
 from django.db import transaction
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 
-from .models import Product, ProductCategory, ProductVariant, ProductImage
+from .models import (
+    Product,
+    ProductCategory,
+    ProductVariant,
+    ProductImage,
+)
+
 from .serializers.product_create import ProductCreateSerializer
 from .serializers.product_update import ProductUpdateSerializer
 from .serializers.product_detail import ProductDetailSerializer
 from .serializers.category import ProductCategorySerializer
 from .serializers.category_tree import CategoryTreeSerializer
+
 from core.cloudinary import upload_image
 
-# =========================
-# 后台产品管理（Cloudinary 版）
-# =========================
+from urllib.parse import urlparse
+
+# ================= 工具函数 =================
+
+def normalize_media_path(url: str) -> str:
+    if not url:
+        return url
+    parsed = urlparse(url)
+    path = parsed.path  # 只取 /media/xxx.jpg
+    if path.startswith(settings.MEDIA_URL):
+        return path.replace(settings.MEDIA_URL, '', 1)
+    return path.lstrip('/')
+
+
+def delete_file(field):
+    """安全删除 ImageField 对应的文件（本地环境用）"""
+    if field and hasattr(field, 'path') and os.path.exists(field.path):
+        os.remove(field.path)
+
+
+# ================= 管理后台产品 =================
+
 class AdminProductViewSet(viewsets.ModelViewSet):
-    """
-    Cloudinary 版后台产品管理
-    """
     queryset = Product.objects.all().order_by(
         '-is_featured',
         'featured_order',
@@ -36,138 +62,242 @@ class AdminProductViewSet(viewsets.ModelViewSet):
             return ProductUpdateSerializer
         return ProductCreateSerializer
 
-    # =========================
-    # 创建产品
-    # =========================
-    @transaction.atomic
+    # ========== 创建产品 ==========
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            print("Serializer errors:", serializer.errors)
+            raise
         product = serializer.save()
 
-        # 主图
+        # ===============================
+        # 1️⃣ 主图 cover
+        # ===============================
         cover_file = request.FILES.get('cover')
         if cover_file:
-            product.cover = upload_image(cover_file, folder='yalhardware/products/cover')
+            if settings.DEBUG:
+                product.cover = cover_file
+            else:
+                url = upload_image(cover_file, folder='products/covers')
+                product.cover.name = url
             product.save(update_fields=['cover'])
 
-        # 详情图
+        # ===============================
+        # 2️⃣ 详情图 detail_images
+        # ===============================
         for img in request.FILES.getlist('uploaded_images'):
-            url = upload_image(img, folder='yalhardware/products/detail')
-            ProductImage.objects.create(product=product, image=url)
+            if settings.DEBUG:
+                ProductImage.objects.create(product=product, image=img)
+            else:
+                url = upload_image(img, folder='products/details')
+                ProductImage.objects.create(product=product, image=url)
 
-        # 款式
+        # ===============================
+        # 3️⃣ 款式 variants
+        # ===============================
         variants_raw = request.data.get('uploaded_variants')
         if variants_raw:
-            variants_data = json.loads(variants_raw)
-            for v in variants_data:
-                uid = v.get('uid')
-                file = request.FILES.get(f'uploaded_variants_images_{uid}')
-                image_url = upload_image(file, folder='yalhardware/products/variants') if file else None
-                ProductVariant.objects.create(
-                    product=product,
-                    style_name=v.get('style_name', ''),
-                    spec=v.get('spec', ''),
-                    stock=int(v.get('stock', 0)),
-                    style_image=image_url
+            try:
+                variants_data = json.loads(variants_raw)
+            except json.JSONDecodeError:
+                return Response(
+                    {'detail': 'uploaded_variants 格式错误'},
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
-        return Response({'id': product.id, 'message': '产品创建成功'}, status=status.HTTP_201_CREATED)
-
-    # =========================
-    # 更新产品
-    # =========================
-    @transaction.atomic
-    def update(self, request, *args, **kwargs):
-        product = self.get_object()
-
-        # 基础字段
-        serializer = self.get_serializer(product, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        # 主图
-        if request.data.get('cover') == '':
-            product.cover = None
-            product.save(update_fields=['cover'])
-        cover_file = request.FILES.get('cover')
-        if cover_file:
-            product.cover = upload_image(cover_file, folder='yalhardware/products/cover')
-            product.save(update_fields=['cover'])
-
-        # 删除详情图
-        removed_raw = request.data.get('removed_detail_images', '[]')
-        removed = json.loads(removed_raw)
-        if removed:
-            ProductImage.objects.filter(product=product, image__in=removed).delete()
-
-        # 新增详情图
-        for img in request.FILES.getlist('uploaded_images'):
-            url = upload_image(img, folder='yalhardware/products/detail')
-            ProductImage.objects.create(product=product, image=url)
-
-        # 款式增改删
-        variants_raw = request.data.get('uploaded_variants')
-        if variants_raw:
-            variants_data = json.loads(variants_raw)
-            keep_ids = []
-
             for v in variants_data:
-                vid = v.get('id')
                 uid = v.get('uid')
-                remove_image = v.get('remove_image', False)
-                file = request.FILES.get(f'uploaded_variants_images_{uid}')
-
-                if vid:
-                    obj = ProductVariant.objects.get(id=vid, product=product)
-                    obj.style_name = v.get('style_name', '')
-                    obj.spec = v.get('spec', '')
-                    obj.stock = int(v.get('stock', 0))
-
-                    if remove_image:
-                        obj.style_image = None
-                    if file:
-                        obj.style_image = upload_image(file, folder='yalhardware/products/variants')
-                    obj.save()
-                    keep_ids.append(obj.id)
-                else:
-                    image_url = upload_image(file, folder='yalhardware/products/variants') if file else None
-                    obj = ProductVariant.objects.create(
+                image_file = request.FILES.get(f'uploaded_variants_images_{uid}')
+                if settings.DEBUG:
+                    variant_obj = ProductVariant.objects.create(
                         product=product,
                         style_name=v.get('style_name', ''),
                         spec=v.get('spec', ''),
                         stock=int(v.get('stock', 0)),
-                        style_image=image_url
+                        style_image=image_file if image_file else None
                     )
-                    keep_ids.append(obj.id)
+                else:
+                    variant_obj = ProductVariant.objects.create(
+                        product=product,
+                        style_name=v.get('style_name', ''),
+                        spec=v.get('spec', ''),
+                        stock=int(v.get('stock', 0))
+                    )
+                    if image_file:
+                        url = upload_image(image_file, folder='products/variants')
+                        variant_obj.style_image.name = url
+                        variant_obj.save(update_fields=['style_image'])
 
-            ProductVariant.objects.filter(product=product).exclude(id__in=keep_ids).delete()
+        return Response(
+            {'id': product.id, 'message': '产品创建成功'},
+            status=status.HTTP_201_CREATED
+        )
 
-        # 返回最新数据
-        product = Product.objects.prefetch_related('detail_images', 'variants').get(id=product.id)
-        serializer = ProductDetailSerializer(product, context={'request': request})
-        return Response(serializer.data)
-
-    # =========================
-    # 推荐产品排序
-    # =========================
+    # ========== 推荐产品排序 ==========
     @action(detail=False, methods=['post'], url_path='reorder')
     @transaction.atomic
     def reorder(self, request):
         data = request.data
         if not isinstance(data, list):
             return Response({'detail': '请求数据必须为列表'}, status=400)
+
         for item in data:
             pid = int(item.get('id'))
             order = int(item.get('featured_order', 0))
             Product.objects.filter(id=pid).update(featured_order=order)
+
         return Response({'message': '排序已保存'}, status=200)
 
+    # ========== 更新产品 ==========
+    def update(self, request, *args, **kwargs):
+        product = self.get_object()
 
-# =========================
-# 产品分类管理
-# =========================
+        # ===============================
+        # 0️⃣ 更新 Product 基础字段
+        # ===============================
+        serializer = self.get_serializer(product, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # ===============================
+        # 1️⃣ 更新主图 cover
+        # ===============================
+        cover_file = request.FILES.get('cover')
+        if cover_file:
+            if settings.DEBUG:
+                if product.cover:
+                    product.cover.delete(save=False)
+                product.cover = cover_file
+            else:
+                url = upload_image(cover_file, folder='products/covers')
+                product.cover.name = url
+            product.save(update_fields=['cover'])
+        elif request.data.get('cover') == '':
+            # 删除主图
+            if product.cover:
+                if settings.DEBUG:
+                    product.cover.delete(save=False)
+                product.cover = None
+                product.save(update_fields=['cover'])
+
+        # ===============================
+        # 2️⃣ 删除 detail_images
+        # ===============================
+        removed_images_raw = request.data.get('removed_detail_images', '[]')
+        try:
+            removed_images = json.loads(removed_images_raw)
+        except json.JSONDecodeError:
+            removed_images = []
+
+        if removed_images:
+            paths = [normalize_media_path(u) for u in removed_images]
+            images = ProductImage.objects.filter(product=product, image__in=paths)
+            for img in images:
+                if settings.DEBUG and img.image:
+                    img.image.delete(save=False)
+                img.delete()
+
+        # ===============================
+        # 3️⃣ 新增 detail_images
+        # ===============================
+        for img in request.FILES.getlist('uploaded_images'):
+            if settings.DEBUG:
+                ProductImage.objects.create(product=product, image=img)
+            else:
+                url = upload_image(img, folder='products/details')
+                ProductImage.objects.create(product=product, image=url)
+
+        # ===============================
+        # 4️⃣ variants（增 / 改 / 删 / 图）
+        # ===============================
+        variants_raw = request.data.get('uploaded_variants')
+        if variants_raw:
+            try:
+                variants_data = json.loads(variants_raw)
+            except json.JSONDecodeError:
+                return Response(
+                    {'detail': 'uploaded_variants 格式错误'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            keep_ids = []
+
+            for v in variants_data:
+                vid = v.get('id')
+                uid = v.get('uid')
+                remove_image = v.get('remove_image', False)
+                image_file = request.FILES.get(f'uploaded_variants_images_{uid}')
+
+                if vid:
+                    # ===== 更新 =====
+                    obj = ProductVariant.objects.get(id=vid, product=product)
+                    obj.style_name = v.get('style_name', '')
+                    obj.spec = v.get('spec', '')
+                    obj.stock = int(v.get('stock', 0))
+
+                    # 删除图片
+                    if remove_image:
+                        if obj.style_image:
+                            if settings.DEBUG:
+                                obj.style_image.delete(save=False)
+                            obj.style_image = None
+
+                    # 替换图片
+                    if image_file:
+                        if settings.DEBUG and obj.style_image:
+                            obj.style_image.delete(save=False)
+                        if settings.DEBUG:
+                            obj.style_image = image_file
+                        else:
+                            url = upload_image(image_file, folder='products/variants')
+                            obj.style_image.name = url
+                        obj.save(update_fields=['style_image', 'style_name', 'spec', 'stock'])
+                    else:
+                        obj.save(update_fields=['style_name', 'spec', 'stock'])
+
+                    keep_ids.append(obj.id)
+
+                else:
+                    # ===== 新增 =====
+                    if settings.DEBUG:
+                        obj = ProductVariant.objects.create(
+                            product=product,
+                            style_name=v.get('style_name', ''),
+                            spec=v.get('spec', ''),
+                            stock=int(v.get('stock', 0)),
+                            style_image=image_file if image_file else None
+                        )
+                    else:
+                        obj = ProductVariant.objects.create(
+                            product=product,
+                            style_name=v.get('style_name', ''),
+                            spec=v.get('spec', ''),
+                            stock=int(v.get('stock', 0))
+                        )
+                        if image_file:
+                            url = upload_image(image_file, folder='products/variants')
+                            obj.style_image.name = url
+                            obj.save(update_fields=['style_image'])
+                    keep_ids.append(obj.id)
+
+            # ===== 删除被移除的款式 =====
+            to_delete = ProductVariant.objects.filter(product=product).exclude(id__in=keep_ids)
+            for v in to_delete:
+                if settings.DEBUG and v.style_image:
+                    v.style_image.delete(save=False)
+                v.delete()
+
+        # ===============================
+        # 5️⃣ 强制重新查询
+        # ===============================
+        product = Product.objects.prefetch_related('detail_images', 'variants').get(id=product.id)
+        serializer = ProductDetailSerializer(product, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # ================= 分类 =================
+
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategorySerializer

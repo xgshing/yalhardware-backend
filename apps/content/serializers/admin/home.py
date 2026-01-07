@@ -8,6 +8,7 @@ from .image import (
     HomeStoryImageSerializer,
 )
 
+
 # ================= HomeBanner =================
 class AdminHomeBannerSerializer(serializers.ModelSerializer):
     images = HomeBannerImageSerializer(many=True, read_only=True)
@@ -16,17 +17,19 @@ class AdminHomeBannerSerializer(serializers.ModelSerializer):
         model = HomeBanner
         fields = '__all__'
 
+
 # ================= HomeFeature =================
 class AdminHomeFeatureSerializer(serializers.ModelSerializer):
-    images = HomeFeatureImageSerializer(many=True, read_only=True)  # 注意这里用 images
+    images = HomeFeatureImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = HomeFeature
         fields = '__all__'
 
+
 # ================= HomeStory =================
 class AdminHomeStorySerializer(serializers.ModelSerializer):
-    images = HomeStoryImageSerializer(many=True, read_only=True)  # 注意这里用 images
+    images = HomeStoryImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = HomeStory

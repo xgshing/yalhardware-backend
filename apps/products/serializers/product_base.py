@@ -1,21 +1,28 @@
 # apps/products/serializers/product_base.py
 from rest_framework import serializers
-from ..models import Product
+from django.conf import settings
+from ..models import Product, ProductVariant, ProductImage
+from core.cloudinary import upload_image
+
 
 class BaseProductWriteSerializer(serializers.ModelSerializer):
-    """
-    公共字段，用于 Create / Update，处理文件上传
-    """
     uploaded_images = serializers.ListField(
-        child=serializers.FileField(),  # ⚠ FileField 支持前端上传文件
+        child=serializers.ImageField(),
         write_only=True,
         required=False
     )
-
     uploaded_variants = serializers.JSONField(
         write_only=True,
         required=False
     )
+
+    def _upload(self, file, folder):
+        """
+        本地 SQLite 返回文件，生产环境上传 Cloudinary
+        """
+        if settings.DATABASES['default']['ENGINE'].endswith('sqlite3'):
+            return file
+        return upload_image(file, folder)
 
     class Meta:
         model = Product
@@ -26,7 +33,8 @@ class BaseProductWriteSerializer(serializers.ModelSerializer):
             'description',
             'specifications',
             'is_active',
+            'cover',
             'is_featured',
-            'uploaded_images',
-            'uploaded_variants',
         ]
+
+

@@ -50,8 +50,8 @@ class Product(models.Model):
     featured_order = models.PositiveIntegerField(default=0)  # 推荐顺序（整数）
     
     # 主图。upload_to 指定上传路径,blank=True → 表单可为空,null=True → 数据库允许 NULL
-    cover = models.URLField(
-        max_length=500,
+    cover = models.ImageField(
+        upload_to='products/covers/',
         blank=True,
         null=True
     )
@@ -76,7 +76,7 @@ class ProductVariant(models.Model):
         on_delete=models.CASCADE
     )
     style_name = models.CharField(max_length=100)  # 款式名称，如“红色”、“黑色”
-    style_image = models.URLField(max_length=500)
+    style_image = models.ImageField(upload_to='products/variants/')
     spec = models.CharField(max_length=100, blank=True)  # 规格/尺寸，如“XL”、“20cm”
     stock = models.IntegerField(default=0)  # 每个款式的库存
 
@@ -101,5 +101,4 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE
     )
     # 存储详情图.upload_to='products/details/' → 上传到对应目录
-    image = models.URLField(max_length=500, blank=True, null=True)
-
+    image = models.ImageField(upload_to='products/details/')

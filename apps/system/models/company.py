@@ -1,7 +1,4 @@
 # apps/system/models/company.py
-from django.db import models
-
-# apps/system/models/company.py
 
 from django.db import models
 
@@ -33,7 +30,7 @@ class CompanyAboutImage(models.Model):
         related_name='about_images',
         on_delete=models.CASCADE
     )
-    image = models.URLField(max_length=500)
+    image = models.ImageField(upload_to='company/about/')
     sort = models.PositiveIntegerField(default=0)
 
     class Meta:

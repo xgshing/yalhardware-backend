@@ -1,6 +1,8 @@
 # Serializer（前台展示用）
 # apps/content/serializers/frontend/home.py
 from rest_framework import serializers
+from django.conf import settings
+from core.cloudinary import upload_image
 from ...models.home import HomeBanner, HomeFeature, HomeStory
 
 
@@ -12,7 +14,7 @@ class HomeBannerSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
-            'subtitle',
+            'description',  # 原 subtitle 改为 description 保持模型字段一致
             'image',
             'button_text',
             'button_link',
@@ -20,9 +22,13 @@ class HomeBannerSerializer(serializers.ModelSerializer):
 
     def get_image(self, obj):
         request = self.context.get('request')
-        if not obj.image:
+        if not obj.images.exists():
             return ''
-        return request.build_absolute_uri(obj.image.url)
+        # 默认取第一张图作为展示
+        img = obj.images.first()
+        if hasattr(img, 'image') and img.image:
+            return request.build_absolute_uri(img.image.url)
+        return ''
 
 
 class HomeFeatureSerializer(serializers.ModelSerializer):
@@ -33,10 +39,14 @@ class HomeFeatureSerializer(serializers.ModelSerializer):
         fields = ['title', 'description', 'icon']
 
     def get_icon(self, obj):
-        if not obj.icon:
-            return ''
         request = self.context.get('request')
-        return request.build_absolute_uri(obj.icon.url)
+        if not obj.images.exists():
+            return ''
+        # 默认取第一张图作为 icon
+        icon_obj = obj.images.first()
+        if hasattr(icon_obj, 'icon') and icon_obj.icon:
+            return request.build_absolute_uri(icon_obj.icon.url)
+        return ''
 
 
 class HomeStorySerializer(serializers.ModelSerializer):
@@ -48,6 +58,9 @@ class HomeStorySerializer(serializers.ModelSerializer):
 
     def get_image(self, obj):
         request = self.context.get('request')
-        if not obj.image:
+        if not obj.images.exists():
             return ''
-        return request.build_absolute_uri(obj.image.url)
+        img = obj.images.first()
+        if hasattr(img, 'image') and img.image:
+            return request.build_absolute_uri(img.image.url)
+        return ''

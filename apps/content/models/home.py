@@ -36,7 +36,7 @@ class HomeBannerImage(ImageMixin):
         related_name='images',
         on_delete=models.CASCADE,
     )
-    image = models.URLField('图片', max_length=500)
+    image = models.ImageField('图片', upload_to='home/banners/')
 
 # ==============================================================
 class HomeFeature(models.Model):
@@ -61,7 +61,7 @@ class HomeFeatureImage(ImageMixin):
         related_name='images',          # 外键反向查询名
         on_delete=models.CASCADE,
     )
-    icon = models.URLField('图片', max_length=500)    #  图片字段是 icon，前端上传时要用这个字段名
+    icon = models.ImageField('图片', upload_to='home/features/')    #  图片字段是 icon，前端上传时要用这个字段名
 
 # ==============================================================
 class HomeStory(models.Model):
@@ -86,4 +86,4 @@ class HomeStoryImage(ImageMixin):
         related_name='images',  
         on_delete=models.CASCADE,
     )
-    image = models.URLField('图片', max_length=500)
+    image = models.ImageField('图片', upload_to='home/stories/')

@@ -1,4 +1,3 @@
-# 分类树 Serializer（只读）
 # apps/products/serializers/category_tree.py
 from rest_framework import serializers
 from ..models import ProductCategory
