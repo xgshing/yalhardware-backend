@@ -72,16 +72,11 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # ===== 文件存储 =====
-CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
-
-if CLOUDINARY_URL:
+if os.environ.get("DJANGO_ENV") == "production" and os.environ.get("CLOUDINARY_URL"):
     # 生产环境 + Cloudinary 已配置
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     MEDIA_URL = '/media/'  # Django 会自动生成 Cloudinary 的完整 URL
-    cloudinary.config(
-        cloudinary_url=CLOUDINARY_URL,
-        secure=True,
-    )
+
 else:
     # 本地开发或没有 Cloudinary URL
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
