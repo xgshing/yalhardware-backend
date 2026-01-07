@@ -21,14 +21,6 @@ class BaseProductWriteSerializer(serializers.ModelSerializer):
         required=False
     )
 
-    def _upload(self, file, folder):
-        """
-        本地 SQLite 返回文件，生产环境上传 Cloudinary
-        """
-        if settings.DATABASES['default']['ENGINE'].endswith('sqlite3'):
-            return file
-        return upload_image(file, folder)
-
     class Meta:
         model = Product
         fields = [

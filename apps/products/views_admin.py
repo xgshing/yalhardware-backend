@@ -81,7 +81,7 @@ class AdminProductViewSet(viewsets.ModelViewSet):
                 product.cover = cover_file
             else:
                 url = upload_image(cover_file, folder='products/covers')
-                product.cover.name = url
+                product.cover = url
             product.save(update_fields=['cover'])
 
         # ===============================
@@ -127,7 +127,7 @@ class AdminProductViewSet(viewsets.ModelViewSet):
                     )
                     if image_file:
                         url = upload_image(image_file, folder='products/variants')
-                        variant_obj.style_image.name = url
+                        variant_obj.style_image = url
                         variant_obj.save(update_fields=['style_image'])
 
         return Response(

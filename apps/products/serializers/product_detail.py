@@ -53,11 +53,12 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         """
         返回完整 URL，支持本地和 Cloudinary
         """
-        request = self.context.get('request')
-        if obj.cover:
-            if hasattr(obj.cover, 'url'):
-                return request.build_absolute_uri(obj.cover.url)
-            # 如果是字符串（Cloudinary URL），直接返回
-            if isinstance(obj.cover, str):
-                return obj.cover
-        return ''
+        if not obj.cover:
+            return None
+
+        try:
+            # 本地 FileSystemStorage
+            return obj.cover.url
+        except Exception:
+            # Cloudinary / URL 字符串兜底
+            return str(obj.cover)
