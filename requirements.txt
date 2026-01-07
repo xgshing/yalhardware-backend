@@ -13,4 +13,6 @@ gunicorn==21.2.0
 
 psycopg2-binary   # PostgreSQL 驱动
 dj-database-url   # 解析 DATABASE_URL
-cloudinary>=1.36.0
+
+cloudinary==1.44.1
+django-cloudinary-storage==0.3.0
