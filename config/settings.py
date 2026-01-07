@@ -41,13 +41,18 @@ INSTALLED_APPS = [
     # third-party
     'rest_framework',
     'corsheaders',
-
+    'cloudinary_storage',
+    'cloudinary ',
+    
     # local apps
     'apps.accounts',
     'apps.products',
     'apps.content',
     'apps.system.apps.SystemConfig',
+
+
 ]
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
