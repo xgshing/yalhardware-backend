@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-g)#&hcipis_r_h-3e+a1-48w_ssi2r+um4i)+ss6g&l(n-une4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_ENV") != "production"
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -60,18 +60,24 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
-
-if os.environ.get("DJANGO_ENV") == "production":
-    MEDIA_URL = 'https://yalhardware-backend.onrender.com/media/'
-else:
-    MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# 允许 GitHub Pages 域名跨域
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "https://xgshing.github.io",
+    "http://localhost:5173",      # 本地前端
+    "https://xgshing.github.io",  # GitHub Pages
 ]
+
+if os.environ.get("DJANGO_ENV") == "production" and os.environ.get("CLOUDINARY_URL"):
+    # 生产环境 + Cloudinary 已配置
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    MEDIA_URL = '/media/'  # Django 会自动生成 Cloudinary 的完整 URL
+else:
+    # 本地开发或没有 Cloudinary URL
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
