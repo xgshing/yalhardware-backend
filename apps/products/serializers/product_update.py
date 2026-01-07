@@ -3,7 +3,8 @@ from ..models import ProductImage, ProductVariant
 from .product_base import BaseProductWriteSerializer
 
 
-def update(self, instance, validated_data):
+class ProductUpdateSerializer(BaseProductWriteSerializer):
+    def update(self, instance, validated_data):
         # 🚫 防止字符串覆盖 ImageField
         cover = validated_data.get("cover")
         if isinstance(cover, str):
