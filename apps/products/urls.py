@@ -3,7 +3,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views_maintenance import clean_media_paths
 
 
 # ===== 前台 views（只读） =====
@@ -64,6 +63,3 @@ urlpatterns = [
     
 ]
 
-urlpatterns += [
-    path('maintenance/clean-media/', clean_media_paths),
-]
