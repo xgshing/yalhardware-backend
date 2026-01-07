@@ -19,7 +19,10 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         """
         返回可访问的款式图片 URL
         """
-        request = self.context.get('request')
-        if obj.style_image:
-            return request.build_absolute_uri(obj.style_image.url)
-        return None
+        if not obj.style_image:
+            return None
+
+        try:
+            return obj.style_image.url
+        except Exception:
+            return str(obj.style_image)

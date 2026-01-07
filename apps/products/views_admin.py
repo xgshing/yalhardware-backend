@@ -1,6 +1,8 @@
 # apps/products/views_admin.py
 import json
 import os
+from urllib.parse import urlparse
+
 from django.conf import settings
 from django.db import transaction
 
@@ -24,7 +26,6 @@ from .serializers.category_tree import CategoryTreeSerializer
 
 from core.cloudinary import upload_image
 
-from urllib.parse import urlparse
 
 # ================= 工具函数 =================
 
@@ -32,16 +33,25 @@ def normalize_media_path(url: str) -> str:
     if not url:
         return url
     parsed = urlparse(url)
-    path = parsed.path  # 只取 /media/xxx.jpg
+    path = parsed.path
     if path.startswith(settings.MEDIA_URL):
         return path.replace(settings.MEDIA_URL, '', 1)
     return path.lstrip('/')
 
 
-def delete_file(field):
-    """安全删除 ImageField 对应的文件（本地环境用）"""
-    if field and hasattr(field, 'path') and os.path.exists(field.path):
-        os.remove(field.path)
+def set_image(field, file, folder):
+    """
+    本地：ImageField = file
+    生产：ImageField.name = Cloudinary URL
+    """
+    if not file:
+        return
+
+    if settings.DEBUG:
+        field.file = file
+    else:
+        url = upload_image(file, folder=folder)
+        field.name = url
 
 
 # ================= 管理后台产品 =================
@@ -65,38 +75,22 @@ class AdminProductViewSet(viewsets.ModelViewSet):
     # ========== 创建产品 ==========
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-        except Exception as e:
-            print("Serializer errors:", serializer.errors)
-            raise
+        serializer.is_valid(raise_exception=True)
         product = serializer.save()
 
-        # ===============================
         # 1️⃣ 主图 cover
-        # ===============================
         cover_file = request.FILES.get('cover')
         if cover_file:
-            if settings.DEBUG:
-                product.cover = cover_file
-            else:
-                url = upload_image(cover_file, folder='products/covers')
-                product.cover = url
-            product.save(update_fields=['cover'])
+            set_image(product.cover, cover_file, 'products/covers')
+            product.save()
 
-        # ===============================
         # 2️⃣ 详情图 detail_images
-        # ===============================
         for img in request.FILES.getlist('uploaded_images'):
-            if settings.DEBUG:
-                ProductImage.objects.create(product=product, image=img)
-            else:
-                url = upload_image(img, folder='products/details')
-                ProductImage.objects.create(product=product, image=url)
+            obj = ProductImage(product=product)
+            set_image(obj.image, img, 'products/details')
+            obj.save()
 
-        # ===============================
         # 3️⃣ 款式 variants
-        # ===============================
         variants_raw = request.data.get('uploaded_variants')
         if variants_raw:
             try:
@@ -110,25 +104,17 @@ class AdminProductViewSet(viewsets.ModelViewSet):
             for v in variants_data:
                 uid = v.get('uid')
                 image_file = request.FILES.get(f'uploaded_variants_images_{uid}')
-                if settings.DEBUG:
-                    variant_obj = ProductVariant.objects.create(
-                        product=product,
-                        style_name=v.get('style_name', ''),
-                        spec=v.get('spec', ''),
-                        stock=int(v.get('stock', 0)),
-                        style_image=image_file if image_file else None
-                    )
-                else:
-                    variant_obj = ProductVariant.objects.create(
-                        product=product,
-                        style_name=v.get('style_name', ''),
-                        spec=v.get('spec', ''),
-                        stock=int(v.get('stock', 0))
-                    )
-                    if image_file:
-                        url = upload_image(image_file, folder='products/variants')
-                        variant_obj.style_image = url
-                        variant_obj.save(update_fields=['style_image'])
+
+                obj = ProductVariant.objects.create(
+                    product=product,
+                    style_name=v.get('style_name', ''),
+                    spec=v.get('spec', ''),
+                    stock=int(v.get('stock', 0)),
+                )
+
+                if image_file:
+                    set_image(obj.style_image, image_file, 'products/variants')
+                    obj.save()
 
         return Response(
             {'id': product.id, 'message': '产品创建成功'},
@@ -154,37 +140,28 @@ class AdminProductViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         product = self.get_object()
 
-        # ===============================
-        # 0️⃣ 更新 Product 基础字段
-        # ===============================
+        # 0️⃣ 更新基础字段
         serializer = self.get_serializer(product, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        # ===============================
         # 1️⃣ 更新主图 cover
-        # ===============================
         cover_file = request.FILES.get('cover')
         if cover_file:
-            if settings.DEBUG:
-                if product.cover:
-                    product.cover.delete(save=False)
-                product.cover = cover_file
-            else:
-                url = upload_image(cover_file, folder='products/covers')
-                product.cover.name = url
-            product.save(update_fields=['cover'])
+            if settings.DEBUG and product.cover:
+                product.cover.delete(save=False)
+
+            set_image(product.cover, cover_file, 'products/covers')
+            product.save()
+
         elif request.data.get('cover') == '':
-            # 删除主图
             if product.cover:
                 if settings.DEBUG:
                     product.cover.delete(save=False)
                 product.cover = None
-                product.save(update_fields=['cover'])
+                product.save()
 
-        # ===============================
         # 2️⃣ 删除 detail_images
-        # ===============================
         removed_images_raw = request.data.get('removed_detail_images', '[]')
         try:
             removed_images = json.loads(removed_images_raw)
@@ -199,19 +176,13 @@ class AdminProductViewSet(viewsets.ModelViewSet):
                     img.image.delete(save=False)
                 img.delete()
 
-        # ===============================
         # 3️⃣ 新增 detail_images
-        # ===============================
         for img in request.FILES.getlist('uploaded_images'):
-            if settings.DEBUG:
-                ProductImage.objects.create(product=product, image=img)
-            else:
-                url = upload_image(img, folder='products/details')
-                ProductImage.objects.create(product=product, image=url)
+            obj = ProductImage(product=product)
+            set_image(obj.image, img, 'products/details')
+            obj.save()
 
-        # ===============================
         # 4️⃣ variants（增 / 改 / 删 / 图）
-        # ===============================
         variants_raw = request.data.get('uploaded_variants')
         if variants_raw:
             try:
@@ -231,72 +202,52 @@ class AdminProductViewSet(viewsets.ModelViewSet):
                 image_file = request.FILES.get(f'uploaded_variants_images_{uid}')
 
                 if vid:
-                    # ===== 更新 =====
                     obj = ProductVariant.objects.get(id=vid, product=product)
                     obj.style_name = v.get('style_name', '')
                     obj.spec = v.get('spec', '')
                     obj.stock = int(v.get('stock', 0))
 
-                    # 删除图片
-                    if remove_image:
-                        if obj.style_image:
-                            if settings.DEBUG:
-                                obj.style_image.delete(save=False)
-                            obj.style_image = None
+                    if remove_image and obj.style_image:
+                        if settings.DEBUG:
+                            obj.style_image.delete(save=False)
+                        obj.style_image = None
 
-                    # 替换图片
                     if image_file:
                         if settings.DEBUG and obj.style_image:
                             obj.style_image.delete(save=False)
-                        if settings.DEBUG:
-                            obj.style_image = image_file
-                        else:
-                            url = upload_image(image_file, folder='products/variants')
-                            obj.style_image.name = url
-                        obj.save(update_fields=['style_image', 'style_name', 'spec', 'stock'])
-                    else:
-                        obj.save(update_fields=['style_name', 'spec', 'stock'])
+                        set_image(obj.style_image, image_file, 'products/variants')
 
+                    obj.save()
                     keep_ids.append(obj.id)
 
                 else:
-                    # ===== 新增 =====
-                    if settings.DEBUG:
-                        obj = ProductVariant.objects.create(
-                            product=product,
-                            style_name=v.get('style_name', ''),
-                            spec=v.get('spec', ''),
-                            stock=int(v.get('stock', 0)),
-                            style_image=image_file if image_file else None
-                        )
-                    else:
-                        obj = ProductVariant.objects.create(
-                            product=product,
-                            style_name=v.get('style_name', ''),
-                            spec=v.get('spec', ''),
-                            stock=int(v.get('stock', 0))
-                        )
-                        if image_file:
-                            url = upload_image(image_file, folder='products/variants')
-                            obj.style_image.name = url
-                            obj.save(update_fields=['style_image'])
+                    obj = ProductVariant.objects.create(
+                        product=product,
+                        style_name=v.get('style_name', ''),
+                        spec=v.get('spec', ''),
+                        stock=int(v.get('stock', 0)),
+                    )
+
+                    if image_file:
+                        set_image(obj.style_image, image_file, 'products/variants')
+                        obj.save()
+
                     keep_ids.append(obj.id)
 
-            # ===== 删除被移除的款式 =====
+            # 删除被移除的款式
             to_delete = ProductVariant.objects.filter(product=product).exclude(id__in=keep_ids)
             for v in to_delete:
                 if settings.DEBUG and v.style_image:
                     v.style_image.delete(save=False)
                 v.delete()
 
-        # ===============================
-        # 5️⃣ 强制重新查询
-        # ===============================
+        # 5️⃣ 返回最新数据
         product = Product.objects.prefetch_related('detail_images', 'variants').get(id=product.id)
         serializer = ProductDetailSerializer(product, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # ================= 分类 =================
+
+# ================= 分类 =================
 
 class ProductCategoryViewSet(viewsets.ModelViewSet):
     queryset = ProductCategory.objects.all()

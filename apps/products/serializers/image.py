@@ -13,10 +13,13 @@ class ProductImageSerializer(serializers.ModelSerializer):
         """
         返回可访问的图片 URL
         """
-        request = self.context.get('request')
-        if obj.image:
-            return request.build_absolute_uri(obj.image.url)
-        return None
+        if not obj.image:
+            return None
+
+        try:
+            return obj.image.url
+        except Exception:
+            return str(obj.image)
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):

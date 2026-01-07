@@ -76,7 +76,11 @@ class ProductVariant(models.Model):
         on_delete=models.CASCADE
     )
     style_name = models.CharField(max_length=100)  # 款式名称，如“红色”、“黑色”
-    style_image = models.ImageField(upload_to='products/variants/')
+    style_image = models.ImageField(
+        upload_to='products/variants/',
+        blank=True,
+        null=True
+    )
     spec = models.CharField(max_length=100, blank=True)  # 规格/尺寸，如“XL”、“20cm”
     stock = models.IntegerField(default=0)  # 每个款式的库存
 

@@ -57,8 +57,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             return None
 
         try:
-            # 本地 FileSystemStorage
             return obj.cover.url
         except Exception:
-            # Cloudinary / URL 字符串兜底
             return str(obj.cover)
