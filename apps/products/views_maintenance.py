@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from apps.products.models import Product, ProductImage, ProductVariant
 
-@api_view(['POST'])
+@api_view(['GET','POST'])
 def clean_media_paths(request):
     c1 = ProductImage.objects.filter(image__startswith='media/').update(image='')
     c2 = ProductVariant.objects.filter(style_image__startswith='media/').update(style_image='')
