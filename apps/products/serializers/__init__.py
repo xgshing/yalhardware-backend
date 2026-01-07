@@ -1,5 +1,5 @@
 # 所有外部 import 都从这里进
-# serializers/__init__.py
+# apps/products/serializers/__init__.py
 from .category import ProductCategorySerializer
 from .image import ProductImageSerializer
 from .variant import ProductVariantSerializer

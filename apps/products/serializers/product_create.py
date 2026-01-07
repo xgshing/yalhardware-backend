@@ -1,5 +1,4 @@
 # apps/products/serializers/product_create.py
-# apps/products/serializers/product_create.py
 from rest_framework import serializers
 from ..models import Product, ProductImage, ProductVariant, ProductCategory
 from .product_base import BaseProductWriteSerializer

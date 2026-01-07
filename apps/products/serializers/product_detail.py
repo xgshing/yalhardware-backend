@@ -40,7 +40,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'is_featured',
             'featured_order',
             # 图片
-            'cover',
             'cover_url',
             'detail_images',
             # 款式
