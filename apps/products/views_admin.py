@@ -142,27 +142,58 @@ class AdminProductViewSet(viewsets.ModelViewSet):
             product.cover = None
             product.save(update_fields=['cover'])
 
+        from urllib.parse import urlparse
+
         # --------- 2️⃣ 删除 detail_images ---------
         removed_images_raw = request.data.get('removed_detail_images', '[]')
+
         try:
-            removed_images = json.loads(removed_images_raw)
+            removed_items = json.loads(removed_images_raw)
         except json.JSONDecodeError:
-            removed_images = []
+            removed_items = []
 
-        if removed_images:
-            for url in removed_images:
-                # 本地环境，把完整 URL 转成相对路径
-                if settings.DEBUG and url.startswith(request.build_absolute_uri(settings.MEDIA_URL)):
-                    url = url.replace(request.build_absolute_uri(settings.MEDIA_URL), '')
+        for item in removed_items:
+            img_obj = None
 
-                try:
-                    img_obj = ProductImage.objects.get(product=product, image=url)
-                    # 本地删除文件
-                    if settings.DEBUG and img_obj.image:
-                        default_storage.delete(img_obj.image)
-                    img_obj.delete()
-                except ProductImage.DoesNotExist:
-                    continue
+            # ✅ 1. 按 id（最稳定）
+            if isinstance(item, dict) and item.get('id'):
+                img_obj = ProductImage.objects.filter(
+                    id=item['id'],
+                    product=product
+                ).first()
+
+            elif isinstance(item, int):
+                img_obj = ProductImage.objects.filter(
+                    id=item,
+                    product=product
+                ).first()
+
+            # ⚠️ 2. 兜底：URL / 相对路径
+            elif isinstance(item, str):
+                image_value = item
+
+                # ✅ 本地环境：把完整 URL 转成相对路径
+                if settings.DEBUG:
+                    parsed = urlparse(item)
+                    path = parsed.path  # /media/products/details/xxx.jpg
+                    if path.startswith(settings.MEDIA_URL):
+                        image_value = path.replace(settings.MEDIA_URL, '', 1).lstrip('/')
+
+                img_obj = ProductImage.objects.filter(
+                    product=product,
+                    image=image_value
+                ).first()
+
+            if not img_obj:
+                continue
+
+            # 本地删除文件
+            if settings.DEBUG and img_obj.image:
+                default_storage.delete(img_obj.image)
+
+            img_obj.delete()
+
+
 
         # --------- 3️⃣ 新增 detail_images ---------
         for img in request.FILES.getlist('uploaded_images'):
