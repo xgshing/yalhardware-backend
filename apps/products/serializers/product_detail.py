@@ -4,11 +4,11 @@ from ..models import Product
 from .category import ProductCategorySerializer
 from .image import ProductImageSerializer
 from .variant import ProductVariantSerializer
+from django.conf import settings
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    # 👉 用于展示
+    # 分类展示
     category = ProductCategorySerializer(read_only=True)
-    # 👉 用于编辑（关键）
     category_id = serializers.PrimaryKeyRelatedField(
         source='category',
         queryset=Product._meta.get_field('category').remote_field.model.objects.all(),
@@ -17,46 +17,40 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         allow_null=True
     )
 
+    # 详情图、variants
     detail_images = ProductImageSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
 
-    # cover_url 用于展示 Cloudinary URL
-    cover_url = serializers.SerializerMethodField()
+    # 主图 cover
+    cover = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = [
             'id',
             'name',
-            # 分类
-            'category',     # 只读（回显）
-            'category_id',  # 可写（提交）
-            # 基础信息
+            'category',
+            'category_id',
             'price',
             'description',
             'specifications',
-            # 状态
             'is_active',
             'is_featured',
             'featured_order',
-            # 图片
             'cover',
-            'cover_url',
             'detail_images',
-            # 款式
             'variants',
-            # 时间
             'created_at',
         ]
 
-    def get_cover_url(self, obj):
-        """
-        返回完整 URL，支持本地和 Cloudinary
-        """
+    def get_cover(self, obj):
         if not obj.cover:
             return None
-
-        try:
-            return obj.cover.url
-        except Exception:
-            return str(obj.cover)
+        request = self.context.get('request')
+        # Cloudinary URL
+        if obj.cover.startswith('http'):
+            return obj.cover
+        # 本地 media
+        if request:
+            return request.build_absolute_uri(settings.MEDIA_URL + obj.cover.lstrip('/'))
+        return settings.MEDIA_URL + obj.cover.lstrip('/')

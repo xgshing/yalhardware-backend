@@ -30,8 +30,8 @@ class ProductCreateSerializer(BaseProductWriteSerializer):
             'specifications',
             'is_active',
             'is_featured',
-            'cover',
             'featured_order',
+            'cover',
             'uploaded_images',
             'uploaded_variants',
         ]
@@ -53,12 +53,7 @@ class ProductCreateSerializer(BaseProductWriteSerializer):
         return attrs
 
     def create(self, validated_data):
-        # ❌ 不处理任何图片
+        validated_data.pop('cover', None)
         validated_data.pop('uploaded_images', None)
         validated_data.pop('uploaded_variants', None)
-        validated_data.pop('cover', None)
-
-        # 创建 Product
-        product = Product.objects.create(**validated_data)
-
-        return product
+        return Product.objects.create(**validated_data)

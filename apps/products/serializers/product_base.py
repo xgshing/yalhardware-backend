@@ -6,16 +6,19 @@ from core.cloudinary import upload_image
 
 
 class BaseProductWriteSerializer(serializers.ModelSerializer):
+    # 仅用于接收上传文件（不入库）
     cover = serializers.ImageField(
+        write_only=True,
         required=False,
         allow_null=True
     )
+
     uploaded_images = serializers.ListField(
         child=serializers.ImageField(),
         write_only=True,
-        allow_null=True,
         required=False
     )
+
     uploaded_variants = serializers.JSONField(
         write_only=True,
         required=False
@@ -30,8 +33,8 @@ class BaseProductWriteSerializer(serializers.ModelSerializer):
             'description',
             'specifications',
             'is_active',
-            'cover',
             'is_featured',
+            'cover',
+            'uploaded_images',
+            'uploaded_variants',
         ]
-
-
