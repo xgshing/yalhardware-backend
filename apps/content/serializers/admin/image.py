@@ -1,9 +1,33 @@
-# 多图片 Serializer（通用）
 # apps/content/serializers/admin/image.py
 from rest_framework import serializers
 from django.conf import settings
-from core.cloudinary import upload_image
 from ...models.home import HomeBannerImage, HomeFeatureImage, HomeStoryImage
+
+
+def resolve_image_url(file_field, request=None):
+    if not file_field:
+        return ''
+
+    # FileField（本地）
+    if hasattr(file_field, 'url'):
+        try:
+            if request:
+                return request.build_absolute_uri(file_field.url)
+            return file_field.url
+        except Exception:
+            pass
+
+    # 字符串（Cloudinary）
+    url = str(file_field)
+
+    if url.startswith('http://') or url.startswith('https://'):
+        return url
+
+    cloud_name = getattr(settings, 'CLOUDINARY_CLOUD_NAME', None)
+    if cloud_name:
+        return f'https://res.cloudinary.com/{cloud_name}/image/upload/{url}'
+
+    return url
 
 
 class ImageBaseSerializer(serializers.ModelSerializer):
@@ -12,23 +36,7 @@ class ImageBaseSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj):
         request = self.context.get('request')
         file_field = getattr(obj, 'image', None) or getattr(obj, 'icon', None)
-        if not file_field:
-            return ''
-        # 字符串（Cloudinary URL）
-        if isinstance(file_field, str):
-            return file_field
-        # FileField
-        try:
-            return request.build_absolute_uri(file_field.url)
-        except Exception:
-            return str(file_field)  # 兜底
-
-    def _upload(self, file, folder):
-        from django.conf import settings
-        from core.cloudinary import upload_image
-        if settings.DATABASES['default']['ENGINE'].endswith('sqlite3'):
-            return file
-        return upload_image(file, folder)
+        return resolve_image_url(file_field, request)
 
 
 # ================= Banner Image =================
