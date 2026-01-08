@@ -142,57 +142,30 @@ class AdminProductViewSet(viewsets.ModelViewSet):
             product.cover = None
             product.save(update_fields=['cover'])
 
-        from urllib.parse import urlparse
-
         # --------- 2️⃣ 删除 detail_images ---------
         removed_images_raw = request.data.get('removed_detail_images', '[]')
-
         try:
-            removed_items = json.loads(removed_images_raw)
+            removed_images = json.loads(removed_images_raw)
         except json.JSONDecodeError:
-            removed_items = []
+            removed_images = []
 
-        for item in removed_items:
-            img_obj = None
-
-            # ✅ 1. 按 id（最稳定）
-            if isinstance(item, dict) and item.get('id'):
-                img_obj = ProductImage.objects.filter(
-                    id=item['id'],
-                    product=product
-                ).first()
-
-            elif isinstance(item, int):
-                img_obj = ProductImage.objects.filter(
-                    id=item,
-                    product=product
-                ).first()
-
-            # ⚠️ 2. 兜底：URL / 相对路径
-            elif isinstance(item, str):
-                image_value = item
-
-                # ✅ 本地环境：把完整 URL 转成相对路径
-                if settings.DEBUG:
-                    parsed = urlparse(item)
-                    path = parsed.path  # /media/products/details/xxx.jpg
-                    if path.startswith(settings.MEDIA_URL):
-                        image_value = path.replace(settings.MEDIA_URL, '', 1).lstrip('/')
+        if removed_images:
+            for url in removed_images:
+                normalized = normalize_media_path(url)
 
                 img_obj = ProductImage.objects.filter(
                     product=product,
-                    image=image_value
+                    image=normalized
                 ).first()
 
-            if not img_obj:
-                continue
+                if not img_obj:
+                    continue
 
-            # 本地删除文件
-            if settings.DEBUG and img_obj.image:
-                default_storage.delete(img_obj.image)
+                # 仅本地才删物理文件
+                if settings.DEBUG and img_obj.image:
+                    default_storage.delete(img_obj.image)
 
-            img_obj.delete()
-
+                img_obj.delete()
 
 
         # --------- 3️⃣ 新增 detail_images ---------
