@@ -3,7 +3,6 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAdminUser
 from django.conf import settings
-from core.cloudinary import upload_image
 
 from ...models.home import HomeBannerImage, HomeFeatureImage, HomeStoryImage
 from ...serializers.admin.image import (
@@ -11,23 +10,22 @@ from ...serializers.admin.image import (
     HomeFeatureImageSerializer,
     HomeStoryImageSerializer,
 )
+from .mixins.image_actions import MultiImageActionsMixin
 
-
-class BaseAdminImageViewSet(ModelViewSet):
+class BaseAdminImageViewSet(ModelViewSet, MultiImageActionsMixin):
     """
     通用图片上传逻辑：
     - 本地 SQLite 存本地
     - 生产 PostgreSQL 上传 Cloudinary
     """
+    permission_classes = [IsAdminUser]
+
     def perform_create(self, serializer):
         file_field_name = getattr(self, 'file_field_name', 'image')
         file = self.request.FILES.get(file_field_name)
-        if file and not settings.DATABASES['default']['ENGINE'].endswith('sqlite3'):
-            # 上传 Cloudinary
-            uploaded_url = upload_image(file, folder=self.cloud_folder)
-            serializer.save(**{file_field_name: uploaded_url})
-        else:
-            serializer.save(**{file_field_name: file})
+        if file:
+            file = self._upload_file(file)
+        serializer.save(**{file_field_name: file})
 
 
 # ---------------- Banner Image ----------------
