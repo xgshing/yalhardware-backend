@@ -10,31 +10,40 @@ class CompanyAboutImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CompanyAboutImage
-        fields = ['id', 'image', 'image_url', 'sort']
+        fields = ['id', 'image', 'image_url', 'sort', 'company']
+        extra_kwargs = {
+            'company': {'write_only': True}
+        }
 
     def get_image_url(self, obj):
         request = self.context.get('request')
-        if hasattr(obj, 'image') and obj.image:
+
+        if not obj.image:
+            return ''
+
+        # Cloudinary / URL 字符串
+        if isinstance(obj.image, str):
+            return obj.image
+
+        # 本地 ImageField
+        try:
             return request.build_absolute_uri(obj.image.url)
-        return ''
+        except Exception:
+            return ''
 
     def create(self, validated_data):
         image_file = validated_data.pop('image', None)
+
         if image_file:
             if not settings.DATABASES['default']['ENGINE'].endswith('sqlite3'):
-                validated_data['image'] = upload_image(image_file, folder='company/about')
+                validated_data['image'] = upload_image(
+                    image_file, folder='company/about'
+                )
             else:
                 validated_data['image'] = image_file
+
         return super().create(validated_data)
 
-    def update(self, instance, validated_data):
-        image_file = validated_data.pop('image', None)
-        if image_file:
-            if not settings.DATABASES['default']['ENGINE'].endswith('sqlite3'):
-                instance.image = upload_image(image_file, folder='company/about')
-            else:
-                instance.image = image_file
-        return super().update(instance, validated_data)
 
 
 class CompanyProfileSerializer(serializers.ModelSerializer):

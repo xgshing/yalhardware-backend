@@ -34,9 +34,6 @@ def company_profile(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def upload_company_about_image(request):
-    """
-    上传公司介绍图片
-    """
     company = CompanyProfile.objects.first()
     if not company:
         company = CompanyProfile.objects.create()
@@ -45,15 +42,16 @@ def upload_company_about_image(request):
     if not image_file:
         return Response({'error': 'No image'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # 上传处理
-    if not settings.DATABASES['default']['ENGINE'].endswith('sqlite3'):
-        image_file = upload_image(image_file, folder='company/about')
-
-    about_image = CompanyAboutImage.objects.create(
-        company=company,
-        image=image_file,
-        sort=request.data.get('sort', 0)
+    serializer = CompanyAboutImageSerializer(
+        data={
+            'company': company.id,
+            'image': image_file,
+            'sort': request.data.get('sort', 0),
+        },
+        context={'request': request}
     )
 
-    serializer = CompanyAboutImageSerializer(about_image, context={'request': request})
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
     return Response(serializer.data, status=status.HTTP_201_CREATED)
