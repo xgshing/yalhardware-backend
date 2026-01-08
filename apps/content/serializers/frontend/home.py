@@ -1,34 +1,27 @@
-# Serializer（前台展示用）
 # apps/content/serializers/frontend/home.py
 from rest_framework import serializers
-from django.conf import settings
-from core.cloudinary import upload_image
-from ...models.home import HomeBanner, HomeFeature, HomeStory
-
+from ...models.home import HomeBanner, HomeFeature, HomeStory  # ✅ 导入模型
 
 class HomeBannerSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
     class Meta:
         model = HomeBanner
-        fields = [
-            'id',
-            'title',
-            'description',  # 原 subtitle 改为 description 保持模型字段一致
-            'image',
-            'button_text',
-            'button_link',
-        ]
+        fields = ['id', 'title', 'description', 'image', 'button_text', 'button_link']
 
     def get_image(self, obj):
         request = self.context.get('request')
         if not obj.images.exists():
             return ''
-        # 默认取第一张图作为展示
         img = obj.images.first()
-        if hasattr(img, 'image') and img.image:
-            return request.build_absolute_uri(img.image.url)
-        return ''
+        file_field = getattr(img, 'image', None)
+        if not file_field:
+            return ''
+        if isinstance(file_field, str):
+            return file_field
+        if request:
+            return request.build_absolute_uri(file_field.url)
+        return file_field.url
 
 
 class HomeFeatureSerializer(serializers.ModelSerializer):
@@ -42,11 +35,15 @@ class HomeFeatureSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if not obj.images.exists():
             return ''
-        # 默认取第一张图作为 icon
         icon_obj = obj.images.first()
-        if hasattr(icon_obj, 'icon') and icon_obj.icon:
-            return request.build_absolute_uri(icon_obj.icon.url)
-        return ''
+        file_field = getattr(icon_obj, 'icon', None)
+        if not file_field:
+            return ''
+        if isinstance(file_field, str):
+            return file_field
+        if request:
+            return request.build_absolute_uri(file_field.url)
+        return file_field.url
 
 
 class HomeStorySerializer(serializers.ModelSerializer):
@@ -61,6 +58,11 @@ class HomeStorySerializer(serializers.ModelSerializer):
         if not obj.images.exists():
             return ''
         img = obj.images.first()
-        if hasattr(img, 'image') and img.image:
-            return request.build_absolute_uri(img.image.url)
-        return ''
+        file_field = getattr(img, 'image', None)
+        if not file_field:
+            return ''
+        if isinstance(file_field, str):
+            return file_field
+        if request:
+            return request.build_absolute_uri(file_field.url)
+        return file_field.url
