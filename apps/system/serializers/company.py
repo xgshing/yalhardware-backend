@@ -1,7 +1,7 @@
 # apps/system/serializers/company.py
 from rest_framework import serializers
 from django.conf import settings
-from core.cloudinary import upload_image
+from core.upload import upload_image
 from ..models.company import CompanyProfile, CompanyAboutImage
 
 

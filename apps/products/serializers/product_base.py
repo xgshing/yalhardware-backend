@@ -2,7 +2,6 @@
 from rest_framework import serializers
 from django.conf import settings
 from ..models import Product, ProductVariant, ProductImage
-from core.cloudinary import upload_image
 
 
 class BaseProductWriteSerializer(serializers.ModelSerializer):

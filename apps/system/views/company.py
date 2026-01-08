@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
-from core.cloudinary import upload_image
+from core.upload import upload_image
 
 from ..models.company import CompanyProfile, CompanyAboutImage
 from ..serializers.company import CompanyProfileSerializer, CompanyAboutImageSerializer
