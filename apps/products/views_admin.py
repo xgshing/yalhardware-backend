@@ -150,12 +150,19 @@ class AdminProductViewSet(viewsets.ModelViewSet):
             removed_images = []
 
         if removed_images:
-            paths = [normalize_media_path(u) for u in removed_images]
-            images = ProductImage.objects.filter(product=product, image__in=paths)
-            for img in images:
-                if settings.DEBUG and img.image:
-                    default_storage.delete(img.image)
-                img.delete()
+            for url in removed_images:
+                # 本地环境，把完整 URL 转成相对路径
+                if settings.DEBUG and url.startswith(request.build_absolute_uri(settings.MEDIA_URL)):
+                    url = url.replace(request.build_absolute_uri(settings.MEDIA_URL), '')
+
+                try:
+                    img_obj = ProductImage.objects.get(product=product, image=url)
+                    # 本地删除文件
+                    if settings.DEBUG and img_obj.image:
+                        default_storage.delete(img_obj.image)
+                    img_obj.delete()
+                except ProductImage.DoesNotExist:
+                    continue
 
         # --------- 3️⃣ 新增 detail_images ---------
         for img in request.FILES.getlist('uploaded_images'):
