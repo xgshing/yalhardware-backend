@@ -8,7 +8,14 @@ def resolve_image_url(file_field, request=None):
     if not file_field:
         return ''
 
-    # FileField（本地）
+    # ================= 关键修复 =================
+    # ImageField 里存的是 Cloudinary URL（字符串）
+    raw_value = str(file_field)
+    if raw_value.startswith('http://') or raw_value.startswith('https://'):
+        return raw_value
+    # ============================================
+
+    # ===== 正常本地 ImageField =====
     if hasattr(file_field, 'url'):
         try:
             if request:
@@ -17,17 +24,12 @@ def resolve_image_url(file_field, request=None):
         except Exception:
             pass
 
-    # 字符串（Cloudinary）
-    url = str(file_field)
-
-    if url.startswith('http://') or url.startswith('https://'):
-        return url
-
+    # ===== Cloudinary 旧数据（public_id）=====
     cloud_name = getattr(settings, 'CLOUDINARY_CLOUD_NAME', None)
     if cloud_name:
-        return f'https://res.cloudinary.com/{cloud_name}/image/upload/{url}'
+        return f'https://res.cloudinary.com/{cloud_name}/image/upload/{raw_value}'
 
-    return url
+    return raw_value
 
 
 class ImageBaseSerializer(serializers.ModelSerializer):
