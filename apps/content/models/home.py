@@ -61,7 +61,7 @@ class HomeFeatureImage(ImageMixin):
         related_name='images',          # 外键反向查询名
         on_delete=models.CASCADE,
     )
-    icon = models.ImageField('图片', upload_to='home/features/')    #  图片字段是 icon，前端上传时要用这个字段名
+    image = models.ImageField('图片', upload_to='home/features/')    #  图片字段是 icon，前端上传时要用这个字段名
 
 # ==============================================================
 class HomeStory(models.Model):

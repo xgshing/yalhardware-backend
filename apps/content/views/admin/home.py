@@ -42,7 +42,7 @@ class AdminHomeFeatureViewSet(BaseAdminHomeViewSet):
     serializer_class = AdminHomeFeatureSerializer
     image_model = HomeFeatureImage
     image_fk_field = 'feature'
-    file_field = 'icon'
+    file_field = 'image'
     cloud_folder = 'home/features'
 
 

@@ -42,7 +42,7 @@ class AdminHomeFeatureImageViewSet(BaseAdminImageViewSet):
     queryset = HomeFeatureImage.objects.all()
     serializer_class = HomeFeatureImageSerializer
     permission_classes = [IsAdminUser]
-    file_field_name = 'icon'
+    file_field_name = 'imgae'
     cloud_folder = 'home/features'
 
 

@@ -37,7 +37,7 @@ class ImageBaseSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         request = self.context.get('request')
-        file_field = getattr(obj, 'image', None) or getattr(obj, 'icon', None)
+        file_field = getattr(obj, 'image', None)
         return resolve_image_url(file_field, request)
 
 
@@ -52,7 +52,7 @@ class HomeBannerImageSerializer(ImageBaseSerializer):
 class HomeFeatureImageSerializer(ImageBaseSerializer):
     class Meta:
         model = HomeFeatureImage
-        fields = ['id', 'icon', 'image_url', 'order']
+        fields = ['id', 'image', 'image_url', 'order']
 
 
 # ================= Story Image =================

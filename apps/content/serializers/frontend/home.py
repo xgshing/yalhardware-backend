@@ -84,10 +84,8 @@ class HomeFeatureSerializer(serializers.ModelSerializer):
         if not obj.images.exists():
             return ''
 
-        icon_obj = obj.images.first()
-        file_field = getattr(icon_obj, 'icon', None)
-
-        return resolve_image_url(file_field, request)
+        img = obj.images.first()
+        return resolve_image_url(img.image, request)
 
 
 # ================= HomeStory =================
