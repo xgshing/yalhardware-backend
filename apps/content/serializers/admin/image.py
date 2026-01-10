@@ -3,60 +3,49 @@ from rest_framework import serializers
 from django.conf import settings
 from ...models.home import HomeBannerImage, HomeFeatureImage, HomeStoryImage
 
+class ImageURLMixin:
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        img = data.get('image')
 
-def resolve_image_url(file_field, request=None):
-    if not file_field:
-        return ''
+        if not img:
+            return data
 
-    # ================= 关键修复 =================
-    # ImageField 里存的是 Cloudinary URL（字符串）
-    raw_value = str(file_field)
-    if raw_value.startswith('http://') or raw_value.startswith('https://'):
-        return raw_value
-    # ============================================
-
-    # ===== 正常本地 ImageField =====
-    if hasattr(file_field, 'url'):
-        try:
-            if request:
-                return request.build_absolute_uri(file_field.url)
-            return file_field.url
-        except Exception:
-            pass
-
-    # ===== Cloudinary 旧数据（public_id）=====
-    cloud_name = getattr(settings, 'CLOUDINARY_CLOUD_NAME', None)
-    if cloud_name:
-        return f'https://res.cloudinary.com/{cloud_name}/image/upload/{raw_value}'
-
-    return raw_value
-
-
-class ImageBaseSerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField(read_only=True)
-
-    def get_image_url(self, obj):
         request = self.context.get('request')
-        file_field = getattr(obj, 'image', None)
-        return resolve_image_url(file_field, request)
+
+        # 如果已经是完整 URL
+        if img.startswith('http'):
+            return data
+
+        # 统一处理本地 media 文件
+        if not img.startswith('/'):
+            img = '/' + settings.MEDIA_URL.lstrip('/') + img.lstrip('/')
+        elif not img.startswith(settings.MEDIA_URL):
+            img = settings.MEDIA_URL.rstrip('/') + img
+
+        # 补全域名
+        if request:
+            data['image'] = request.build_absolute_uri(img)
+        else:
+            data['image'] = img  # 如果没有 request，则返回 /media/... 也能在本地访问
+
+        return data
 
 
 # ================= Banner Image =================
-class HomeBannerImageSerializer(ImageBaseSerializer):
+class HomeBannerImageSerializer(ImageURLMixin, serializers.ModelSerializer):
     class Meta:
         model = HomeBannerImage
-        fields = ['id', 'image', 'image_url', 'order']
+        fields = ['id', 'image', 'order']
 
 
-# ================= Feature Image =================
-class HomeFeatureImageSerializer(ImageBaseSerializer):
+class HomeFeatureImageSerializer(ImageURLMixin, serializers.ModelSerializer):
     class Meta:
         model = HomeFeatureImage
-        fields = ['id', 'image', 'image_url', 'order']
+        fields = ['id', 'image', 'order']
 
 
-# ================= Story Image =================
-class HomeStoryImageSerializer(ImageBaseSerializer):
+class HomeStoryImageSerializer(ImageURLMixin, serializers.ModelSerializer):
     class Meta:
         model = HomeStoryImage
-        fields = ['id', 'image', 'image_url', 'order']
+        fields = ['id', 'image', 'order']

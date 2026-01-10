@@ -11,6 +11,7 @@ from ...serializers.admin.image import (
     HomeStoryImageSerializer,
 )
 from .mixins.image_actions import MultiImageActionsMixin
+from core.upload import upload_image
 
 class BaseAdminImageViewSet(ModelViewSet, MultiImageActionsMixin):
     """
@@ -23,9 +24,12 @@ class BaseAdminImageViewSet(ModelViewSet, MultiImageActionsMixin):
     def perform_create(self, serializer):
         file_field_name = getattr(self, 'file_field_name', 'image')
         file = self.request.FILES.get(file_field_name)
+
         if file:
-            file = self._upload_file(file)
-        serializer.save(**{file_field_name: file})
+            url = upload_image(file, folder=self.cloud_folder)
+            serializer.save(**{file_field_name: url})
+        else:
+            serializer.save()
 
 
 # ---------------- Banner Image ----------------
@@ -42,7 +46,7 @@ class AdminHomeFeatureImageViewSet(BaseAdminImageViewSet):
     queryset = HomeFeatureImage.objects.all()
     serializer_class = HomeFeatureImageSerializer
     permission_classes = [IsAdminUser]
-    file_field_name = 'imgae'
+    file_field_name = 'image'
     cloud_folder = 'home/features'
 
 

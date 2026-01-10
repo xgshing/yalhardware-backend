@@ -19,29 +19,25 @@ class MultiImageActionsMixin:
     cloud_folder = 'home'    # Cloudinary folder，可子类覆盖
 
     def _upload_file(self, file):
-        """根据环境上传图片"""
-        if settings.DATABASES['default']['ENGINE'].endswith('sqlite3'):
-            # 本地开发，直接保存文件
-            return file
-        # 生产环境上传 Cloudinary
         return upload_image(file, folder=self.cloud_folder)
 
     def _handle_images(self, instance):
         """处理 FormData 上传、existing_images 删除"""
         existing_ids = self.request.data.getlist('existing_images')
         qs = self.image_model.objects.filter(**{self.image_fk_field: instance})
+        
         if existing_ids:
             qs.exclude(id__in=existing_ids).delete()
         else:
             qs.delete()
 
-        files = self.request.FILES.getlist('images')  # 前端统一传 images
+        files = self.request.FILES.getlist('images')
         for i, f in enumerate(files):
-            url_or_file = self._upload_file(f)
+            url = self._upload_file(f)
             self.image_model.objects.create(
                 **{
                     self.image_fk_field: instance,
-                    self.file_field: url_or_file,
+                    'image': url,   # 永远是 URL
                     'order': i,
                 }
             )
