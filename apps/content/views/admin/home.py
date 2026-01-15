@@ -29,7 +29,7 @@ class BaseAdminHomeViewSet(MultiImageActionsMixin, ModelViewSet):
 
 
 class AdminHomeBannerViewSet(BaseAdminHomeViewSet):
-    queryset = HomeBanner.objects.none() 
+    queryset = HomeBanner.objects.all()
     serializer_class = AdminHomeBannerSerializer
     image_model = HomeBannerImage
     image_fk_field = 'banner'
@@ -44,7 +44,7 @@ class AdminHomeBannerViewSet(BaseAdminHomeViewSet):
 
 
 class AdminHomeFeatureViewSet(BaseAdminHomeViewSet):
-    queryset = HomeFeature.objects.none() 
+    queryset = HomeFeature.objects.all()
     serializer_class = AdminHomeFeatureSerializer
     image_model = HomeFeatureImage
     image_fk_field = 'feature'
@@ -59,7 +59,7 @@ class AdminHomeFeatureViewSet(BaseAdminHomeViewSet):
 
 
 class AdminHomeStoryViewSet(BaseAdminHomeViewSet):
-    queryset = HomeStory.objects.none()
+    queryset = HomeStory.objects.all()
     serializer_class = AdminHomeStorySerializer
     image_model = HomeStoryImage
     image_fk_field = 'story'
