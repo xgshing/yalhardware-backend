@@ -127,13 +127,19 @@ if DATABASE_URL:
     # Render 生产环境 - 使用 PostgreSQL
     # -------------------------------
     # 在 Render Web Service → Environment Variables 中设置：
-    # DATABASE_URL=postgresql://yalhardware_user:qQaBC9KPO7eZQjI8WJQQAcQbXYHC9EkF@dpg-d5e9ks8gjchc73a27bcg-a.oregon-postgres.render.com/yalhardware
     DATABASES = {
-        "default": dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=0,
-            ssl_require=True,
-        )
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "postgres",
+            "USER": "postgres.dkmtrgclwugwfdzkgcjp",
+            "PASSWORD": os.environ["SUPABASE_DB_PASSWORD"],
+            "HOST": "aws-1-ap-southeast-1.pooler.supabase.com",
+            "PORT": "6543",
+            "CONN_MAX_AGE": 0,  
+            "OPTIONS": {
+                "sslmode": "require",
+            },
+        }
     }
 else:
     # -------------------------------
