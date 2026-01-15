@@ -135,7 +135,7 @@ if DATABASE_URL:
             "PASSWORD": os.environ["SUPABASE_DB_PASSWORD"],
             "HOST": "aws-1-ap-southeast-1.pooler.supabase.com",
             "PORT": "6543",
-            "CONN_MAX_AGE": 0,  
+            "CONN_MAX_AGE": 300,  
             "OPTIONS": {
                 "sslmode": "require",
             },
