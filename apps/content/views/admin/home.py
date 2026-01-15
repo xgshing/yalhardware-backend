@@ -29,27 +29,45 @@ class BaseAdminHomeViewSet(MultiImageActionsMixin, ModelViewSet):
 
 
 class AdminHomeBannerViewSet(BaseAdminHomeViewSet):
-    queryset = HomeBanner.objects.all()
+    queryset = HomeBanner.objects.none() 
     serializer_class = AdminHomeBannerSerializer
     image_model = HomeBannerImage
     image_fk_field = 'banner'
-    file_field = 'image'
     cloud_folder = 'home/banners'
+    def get_queryset(self):
+        return (
+            HomeBanner.objects
+            .all()
+            .prefetch_related('images')
+            .order_by('-created_at')
+        )
 
 
 class AdminHomeFeatureViewSet(BaseAdminHomeViewSet):
-    queryset = HomeFeature.objects.all()
+    queryset = HomeFeature.objects.none() 
     serializer_class = AdminHomeFeatureSerializer
     image_model = HomeFeatureImage
     image_fk_field = 'feature'
-    file_field = 'image'
     cloud_folder = 'home/features'
+    def get_queryset(self):
+        return (
+            HomeFeature.objects
+            .all()
+            .prefetch_related('images')
+            .order_by('-created_at')
+        )
 
 
 class AdminHomeStoryViewSet(BaseAdminHomeViewSet):
-    queryset = HomeStory.objects.all()
+    queryset = HomeStory.objects.none()
     serializer_class = AdminHomeStorySerializer
     image_model = HomeStoryImage
     image_fk_field = 'story'
-    file_field = 'image'
     cloud_folder = 'home/stories'
+    def get_queryset(self):
+            return (
+                HomeStory.objects
+                .all()
+                .prefetch_related('images')
+                .order_by('-created_at')
+            )
