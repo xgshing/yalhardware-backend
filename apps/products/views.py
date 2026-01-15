@@ -24,15 +24,8 @@ class ProductListAPIView(ListAPIView):
     GET /api/products/
     """
     permission_classes = [AllowAny]
+    queryset = Product.objects.filter(is_active=True).order_by('-created_at')
     serializer_class = ProductDetailSerializer
-    def get_queryset(self):
-        return (
-            Product.objects
-            .filter(is_active=True)
-            .select_related('category')
-            .prefetch_related('detail_images', 'variants')
-            .order_by('-created_at')[:20]
-        )
 
 
 class ProductDetailAPIView(RetrieveAPIView):

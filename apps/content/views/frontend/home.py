@@ -16,29 +16,20 @@ class HomeAPIView(APIView):
     permission_classes = []
 
     def get(self, request):
-        banners = (
-            HomeBanner.objects
-            .filter(is_active=True)
-            .prefetch_related('images')
-            .order_by('-created_at')[:10]
-        )
-
-        features = (
-            HomeFeature.objects
-            .filter(is_active=True)
-            .prefetch_related('images')
-            .order_by('-created_at')[:10]
-        )
-
-        stories = (
-            HomeStory.objects
-            .filter(is_active=True)
-            .prefetch_related('images')
-            .order_by('-created_at')[:10]
-        )
-
         return Response({
-            'banners': HomeBannerSerializer(banners, many=True, context={'request': request}).data,
-            'features': HomeFeatureSerializer(features, many=True, context={'request': request}).data,
-            'stories': HomeStorySerializer(stories, many=True, context={'request': request}).data,
+            'banners': HomeBannerSerializer(
+                HomeBanner.objects.filter(is_active=True),
+                many=True,
+                context={'request': request},
+            ).data,
+            'features': HomeFeatureSerializer(
+                HomeFeature.objects.filter(is_active=True),
+                many=True,
+                context={'request': request},
+            ).data,
+            'stories': HomeStorySerializer(
+                HomeStory.objects.filter(is_active=True),
+                many=True,
+                context={'request': request},
+            ).data,
         })

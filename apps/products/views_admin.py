@@ -40,15 +40,7 @@ def normalize_media_path(url: str) -> str:
 # ================= 管理后台产品 =================
 
 class AdminProductViewSet(viewsets.ModelViewSet):
-    def get_queryset(self):
-        return (
-            Product.objects
-            .all()
-            .select_related('category')
-            .prefetch_related('detail_images', 'variants')
-            .order_by('-is_featured', 'featured_order', 'id')
-        )
-
+    queryset = Product.objects.all().order_by('-is_featured', 'featured_order', 'id')
     permission_classes = [permissions.AllowAny]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
