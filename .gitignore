@@ -1,4 +1,5 @@
 # Python
+venv/
 __pycache__/
 *.py[cod]
 
@@ -16,3 +17,7 @@ Thumbs.db
 
 yalhardware-backend.git/
 render_backup.sql
+
+project_tree.txt
+project_tree.py
+

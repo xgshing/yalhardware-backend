@@ -6,15 +6,17 @@ from .image import ProductImageSerializer
 from .variant import ProductVariantSerializer
 from django.conf import settings
 
+
 class ProductDetailSerializer(serializers.ModelSerializer):
+    price = serializers.FloatField()
     # 分类展示
     category = ProductCategorySerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
-        source='category',
-        queryset=Product._meta.get_field('category').remote_field.model.objects.all(),
+        source="category",
+        queryset=Product._meta.get_field("category").remote_field.model.objects.all(),
         write_only=True,
         required=False,
-        allow_null=True
+        allow_null=True,
     )
 
     # 详情图、variants
@@ -27,30 +29,32 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id',
-            'name',
-            'category',
-            'category_id',
-            'price',
-            'description',
-            'specifications',
-            'is_active',
-            'is_featured',
-            'featured_order',
-            'cover',
-            'detail_images',
-            'variants',
-            'created_at',
+            "id",
+            "name",
+            "category",
+            "category_id",
+            "price",
+            "description",
+            "specifications",
+            "is_active",
+            "is_featured",
+            "featured_order",
+            "cover",
+            "detail_images",
+            "variants",
+            "created_at",
         ]
 
     def get_cover(self, obj):
         if not obj.cover:
             return None
-        request = self.context.get('request')
+        request = self.context.get("request")
         # Cloudinary URL
-        if obj.cover.startswith('http'):
+        if obj.cover.startswith("http"):
             return obj.cover
         # 本地 media
         if request:
-            return request.build_absolute_uri(settings.MEDIA_URL + obj.cover.lstrip('/'))
-        return settings.MEDIA_URL + obj.cover.lstrip('/')
+            return request.build_absolute_uri(
+                settings.MEDIA_URL + obj.cover.lstrip("/")
+            )
+        return settings.MEDIA_URL + obj.cover.lstrip("/")
