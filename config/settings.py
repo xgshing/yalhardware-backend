@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     # local apps
     "apps.products",
     "apps.content",
-    "apps.users",
+    "apps.users.apps.UsersConfig",
     "apps.reviews",
     "apps.orders",
     "apps.inventory",
