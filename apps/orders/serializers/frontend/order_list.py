@@ -1,5 +1,5 @@
 # 订单列表专用
-# apps/orders/serializers/order_list.py
+# apps/orders/serializers/frontend/order_list.py
 from django.conf import settings
 from rest_framework import serializers
 from apps.orders.models import Order

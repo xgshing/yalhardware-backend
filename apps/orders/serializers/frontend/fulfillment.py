@@ -1,5 +1,4 @@
 # apps/orders/serializers/frontend/fulfillment.py
-# apps/orders/serializers/fulfillment.py
 from rest_framework import serializers
 from apps.orders.models import Fulfillment, FulfillmentItem
 from .order_item import OrderItemSerializer

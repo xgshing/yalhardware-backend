@@ -40,6 +40,12 @@ class Fulfillment(models.Model):
         db_table = "order_fulfillments"
         verbose_name = "订单发货"
         verbose_name_plural = verbose_name
+        constraints = [
+            models.UniqueConstraint(
+                fields=["order", "tracking_no"],
+                name="unique_tracking_per_order",
+            )
+        ]
 
     def __str__(self):
         return f"{self.order.order_no} - {self.tracking_no}"

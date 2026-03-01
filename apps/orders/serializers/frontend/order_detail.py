@@ -1,5 +1,5 @@
 # 订单详情专用
-# apps/orders/serializers/order_detail.py
+# apps/orders/serializers/frontend/order_detail.py
 from rest_framework import serializers
 from apps.orders.models import Order
 from .order_item import OrderItemSerializer

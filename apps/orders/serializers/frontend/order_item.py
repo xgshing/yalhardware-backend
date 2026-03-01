@@ -1,5 +1,5 @@
 # 订单商品行
-# apps/orders/serializers/order_item.py
+# apps/orders/serializers/frontend/order_item.py
 
 from django.conf import settings
 from rest_framework import serializers
