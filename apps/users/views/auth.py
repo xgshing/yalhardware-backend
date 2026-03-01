@@ -83,6 +83,17 @@ class LoginView(APIView):
         if not user.is_active:
             return Response({"error": "用户已被禁用"}, status=403)
 
+        # -----------------------------
+        # 角色限制（关键部分）
+        # -----------------------------
+        admin_mode = request.data.get("admin", False)
+
+        if not admin_mode and user.is_staff:
+            return Response({"error": "管理员账号请选择管理员身份登录"}, status=400)
+
+        if admin_mode and not user.is_staff:
+            return Response({"error": "该账号不是管理员"}, status=403)
+
         # --- 生成 JWT Token ---
         refresh = RefreshToken.for_user(user)
 
