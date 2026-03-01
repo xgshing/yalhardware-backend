@@ -1,6 +1,7 @@
 # 创建评论
 # apps/reviews/serializers/frontend/review_create.py
 from rest_framework import serializers
+from django.utils import timezone
 from apps.reviews.models import Review
 from apps.orders.models import OrderItem
 
@@ -9,7 +10,7 @@ class ReviewCreateSerializer(serializers.Serializer):
     order_item_id = serializers.IntegerField()
     rating = serializers.IntegerField(min_value=1, max_value=5)
     content = serializers.CharField()
-    images = serializers.ListField(child=serializers.ImageField(), required=False)
+    images = serializers.ListField(child=serializers.URLField(), required=False)
 
     def validate_order_item_id(self, value):
         user = self.context["request"].user
@@ -20,8 +21,10 @@ class ReviewCreateSerializer(serializers.Serializer):
 
         if item.order.user != user:
             raise serializers.ValidationError("无权限评价该订单")
+
         if item.order.status != item.order.Status.COMPLETED:
             raise serializers.ValidationError("订单未完成，无法评价")
+
         if hasattr(item, "review"):
             raise serializers.ValidationError("该商品已评价")
 

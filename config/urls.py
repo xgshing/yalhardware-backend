@@ -6,7 +6,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from core.views import health
+from core.views.health import health
+from core.views.upload import UploadView
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -20,6 +21,7 @@ urlpatterns = [
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # ===== API =====
+    path("api/upload/", UploadView.as_view()),  # 图片上传
     path("api/users/", include("apps.users.urls")),  # 用户/管理员
     path("api/", include("apps.inventory.urls")),  # 库存
     path("api/", include("apps.reviews.urls")),  # 评论

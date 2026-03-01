@@ -80,11 +80,18 @@ class OrderItemSerializer(serializers.ModelSerializer):
     # 是否可评价
     # ===============================
     def get_can_review(self, obj):
-        """
-        是否允许评价
-        规则：订单完成 & 当前商品未评价
-        """
+        request = self.context.get("request")
+
+        # 1. 必须是当前用户的订单
+        if obj.order.user != request.user:
+            return False
+
+        # 2. 必须是已完成订单
         if obj.order.status != obj.order.Status.COMPLETED:
             return False
 
-        return not hasattr(obj, "review")
+        # 3. 必须未评价
+        if hasattr(obj, "review"):
+            return False
+
+        return True

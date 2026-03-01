@@ -56,62 +56,44 @@ class LoginView(APIView):
     """
     用户登录视图
     使用邮箱和密码登录，返回 JWT Token 和完整用户信息
+    支持前台和后台同一个接口：
     """
 
     permission_classes = [AllowAny]
 
     def post(self, request):
+
         # --- 获取请求数据 ---
         email = request.data.get("email")
         password = request.data.get("password")
 
-        # 打印获取到的字段
-        print(
-            "Login request data:",
-            {"email": email, "password_length": len(password) if password else None},
-        )
-
-        # 验证必填字段是否存在
+        # 必填字段校验
         if not email or not password:
-
-            print("Missing email or password")
-
             return Response(
                 {"error": "Email and password are required"},
                 status=400,
             )
 
-        # --- 查找用户 ---
+        # 查找用户
         user = User.objects.filter(email=email).first()
-        if not user:
-            print("User not found:", email)
+        if not user or not user.check_password(password):
             return Response({"error": "Invalid email or password"}, status=401)
 
-        # --- 验证密码 ---
-        password_valid = user.check_password(password)
-        print(
-            f"Found user: {user.username}, is_active: {user.is_active}, check_password: {password_valid}"
-        )
-
-        if not password_valid:
-            print("Password mismatch for user:", email)
-            return Response({"error": "Invalid email or password"}, status=401)
+        # 用户状态检查
+        if not user.is_active:
+            return Response({"error": "用户已被禁用"}, status=403)
 
         # --- 生成 JWT Token ---
         refresh = RefreshToken.for_user(user)
 
         # --- 序列化用户信息 ---
         user_data = UserMeSerializer(user).data
-        print("Login success, user data:", user_data)
 
         # --- 返回响应 ---
         return Response(
             {
-                # Access Token -用于API访问认证，短期有效
                 "access": str(refresh.access_token),
-                # Refrsh Token -用于获取新的Access Token，长期有效
                 "refresh": str(refresh),
-                # 用户基本信息
                 "user": user_data,
             }
         )
